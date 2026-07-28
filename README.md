@@ -26,4 +26,4 @@
 
 تحويل البرومبت من نص بسيط إلى أصل معرفي يمكن إدارته، وتحسينه، وقياسه، وإعادة استخدامه، ومشاركته، وتطويره على نطاق واسع.
 
-«المستقبل لا يُنتظر... بل يُبنى.»offee.com/buttons/default-red.png)](https://github.com/sponsors/ixartz)
+«المستقبل لا يُنتظر... بل يُبنى.»offee.com/buttons/default-red.png)](https://github.com/sponsors/eissaalbothigi)
