@@ -133,3 +133,4 @@ export const transactionsRelations = relations(creditTransactions, ({ one }) => 
     references: [users.id],
   }),
 }));
+    https://prompt-master-2030-saa-s.vercel.app/setup
