@@ -7,9 +7,7 @@ import {
   timestamp, 
   jsonb, 
   decimal,
-  primaryKey,
   varchar,
-  uniqueIndex
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2'; // سنضيف هذه الحزمة لاحقاً
