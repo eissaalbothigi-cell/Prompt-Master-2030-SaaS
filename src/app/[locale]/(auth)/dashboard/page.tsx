@@ -1,17 +1,19 @@
+import { currentUser } from '@clerk/nextjs/server';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { PageMessage } from '@/features/dashboard/PageMessage';
 import { TitleBar } from '@/features/dashboard/TitleBar';
-import { SponsorLogos } from '@/features/sponsors/SponsorLogos';
+import { ProfileForm } from '@/components/profile/ProfileForm';
+import { redirect } from 'next/navigation';
 
-export default async function DashboardIndexPage(props: {
+export default async function UserProfilePage(props: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await props.params;
   setRequestLocale(locale);
-  const t = await getTranslations({
-    locale,
-    namespace: 'DashboardIndexPage',
-  });
+
+  const user = await currentUser();
+  if (!user) redirect(`/${locale}/sign-in`);
+
+  const t = await getTranslations({ locale, namespace: 'UserProfilePage' });
 
   return (
     <>
@@ -20,70 +22,17 @@ export default async function DashboardIndexPage(props: {
         description={t('title_bar_description')}
       />
 
-      <PageMessage
-        icon={(
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M0 0h24v24H0z" stroke="none" />
-            <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3M12 12l8-4.5M12 12v9M12 12L4 7.5" />
-          </svg>
-        )}
-        title={t('message_state_title')}
-        description={t.rich('message_state_description', {
-          code: chunks => (
-            <code className="bg-secondary text-secondary-foreground">
-              {chunks}
-            </code>
-          ),
-        })}
-        button={(
-          <>
-            <div className="
-              mt-2 text-sm font-light whitespace-pre-wrap text-muted-foreground
-            "
-            >
-              {t.rich('message_state_alternative', {
-                url: () => (
-                  <a
-                    className="
-                      text-blue-500
-                      hover:text-blue-600
-                    "
-                    href="https://nextjs-boilerplate.com/pro-saas-starter-kit"
-                  >
-                    Next.js Boilerplate SaaS
-                  </a>
-                ),
-              })}
-
-              <p>
-                {t.rich('max_message', {
-                  url: () => (
-                    <a
-                      className="
-                        text-blue-500
-                        hover:text-blue-600
-                      "
-                      href="https://nextjs-boilerplate.com/nextjs-multi-tenant-saas-boilerplate"
-                    >
-                      Next.js Boilerplate Max
-                    </a>
-                  ),
-                })}
-              </p>
-            </div>
-
-            <div className="mt-7">
-              <SponsorLogos />
-            </div>
-          </>
-        )}
+      <ProfileForm
+        user={{
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          email: user.emailAddresses[0]?.emailAddress || '',
+          imageUrl: user.imageUrl,
+          bio: (user.unsafeMetadata?.bio as string) || '',
+          jobTitle: (user.unsafeMetadata?.jobTitle as string) || '',
+        }}
+        locale={locale}
       />
     </>
   );
-};
+}
