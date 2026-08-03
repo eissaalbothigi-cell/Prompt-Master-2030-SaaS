@@ -169,4 +169,4 @@ export function ProfileForm({ user, locale }: ProfileFormProps) {
       </div>
     </div>
   );
-}profileform.tsx
+}
