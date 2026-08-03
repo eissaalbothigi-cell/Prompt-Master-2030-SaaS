@@ -14,5 +14,20 @@
     "success": "✅ تم تحديث ملفك الشخصي بنجاح في برومبت ماستر",
     "error": "❌ حدث خطأ أثناء حفظ البيانات، حاول مجدداً",
     "avatar_alt": "صورة المستخدم"
+  },
+  "DashboardPage": {
+    "title_bar": "مرحباً، {name} 👋",
+    "title_bar_description": "نظرة عامة على نشاطك في برومبت ماستر",
+    "guest": "زائر",
+    "total_prompts": "إجمالي البرومبتات",
+    "credits": "الرصيد المتبقي",
+    "system_status": "حالة النظام",
+    "online": "متصل",
+    "recent_prompts": "آخر البرومبتات",
+    "view_all": "عرض الكل",
+    "no_prompts_yet": "لم تقم بإنشاء أي برومبت بعد",
+    "create_first_prompt": "أنشئ أول برومبت لك",
+    "published": "منشور",
+    "draft": "مسودة"
   }
 }
