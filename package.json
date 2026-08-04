@@ -1,6 +1,6 @@
 {
-  "name": "saas-boilerplate",
-  "author": "Ixartz (https://github.com/ixartz)",
+  "name": "prompt-master-2030-saas",
+  "author": "Prompt Master Team",
   "engines": {
     "node": ">=24"
   },
@@ -10,7 +10,7 @@
     "dev": "run-p db-server:file dev:*",
     "build:next": "next build",
     "build-local": "run-p db-server:memory build:next --race",
-    "build": "run-s db:migrate build:next",
+    "build": "next build",
     "start": "next start",
     "build-stats": "cross-env ANALYZE=true npm run build",
     "clean": "rimraf .next out coverage",
