@@ -128,3 +128,4 @@ export const transactionsRelations = relations(creditTransactions, ({ one }) => 
     references: [users.id],
   }),
 }));
+
