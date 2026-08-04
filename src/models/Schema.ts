@@ -1,28 +1,27 @@
-// src/db/schema.ts
-import { 
-  pgTable, 
-  text, 
-  integer, 
-  boolean, 
-  timestamp, 
-  jsonb, 
+import {
+  pgTable,
+  text,
+  integer,
+  boolean,
+  timestamp,
+  jsonb,
   decimal,
   varchar,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { createId } from '@paralleldrive/cuid2'; // سنضيف هذه الحزمة لاحقاً
+import { createId } from '@paralleldrive/cuid2';
 
 // =============================================
 // 1. جدول المستخدمين (ربط مع Clerk)
 // =============================================
 export const users = pgTable('users', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
-  clerkId: text('clerk_id').unique().notNull(), // المعرف من Clerk
+  clerkId: text('clerk_id').unique().notNull(),
   email: text('email').notNull(),
   name: text('name'),
   avatarUrl: text('avatar_url'),
-  role: text('role').default('user').notNull(), // 'user', 'creator', 'admin'
-  credits: integer('credits').default(10).notNull(), // رصيد مجاني للبدء
+  role: text('role').default('user').notNull(),
+  credits: integer('credits').default(10).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -36,7 +35,6 @@ export const promptFrameworks = pgTable('prompt_frameworks', {
   slug: varchar('slug', { length: 50 }).notNull().unique(),
   icon: varchar('icon', { length: 10 }).default('📝'),
   description: text('description').notNull(),
-  // هيكل القالب (مثل: { "Context": "", "Objective": "", ... } )
   structure: jsonb('structure').notNull().$type<Record<string, string>>(),
   isActive: boolean('is_active').default(true),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -50,11 +48,8 @@ export const prompts = pgTable('prompts', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   title: varchar('title', { length: 255 }).notNull(),
   frameworkId: integer('framework_id').references(() => promptFrameworks.id, { onDelete: 'set null' }),
-  // مدخلات المستخدم (JSON مطابق لهيكل القالب)
   inputData: jsonb('input_data').notNull().$type<Record<string, string>>(),
-  // الناتج النهائي (البرومبت الجاهز)
   output: text('output'),
-  // الحالة: 'draft', 'published', 'archived'
   status: varchar('status', { length: 20 }).default('draft'),
   isPublic: boolean('is_public').default(false),
   views: integer('views').default(0),
@@ -65,7 +60,7 @@ export const prompts = pgTable('prompts', {
 });
 
 // =============================================
-// 4. جدول الطلبات/المشتريات (للمدفوعات لاحقاً)
+// 4. جدول الطلبات/المشتريات
 // =============================================
 export const orders = pgTable('orders', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
@@ -73,27 +68,27 @@ export const orders = pgTable('orders', {
   promptId: text('prompt_id').references(() => prompts.id, { onDelete: 'set null' }),
   amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
   currency: varchar('currency', { length: 3 }).default('USD'),
-  status: varchar('status', { length: 20 }).default('pending'), // pending, paid, failed, refunded
+  status: varchar('status', { length: 20 }).default('pending'),
   stripePaymentId: text('stripe_payment_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 // =============================================
-// 5. جدول سجل الأرصدة (لتتبع استهلاك الرصيد)
+// 5. جدول سجل الأرصدة
 // =============================================
 export const creditTransactions = pgTable('credit_transactions', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
-  amount: integer('amount').notNull(), // موجب (إيداع) أو سالب (خصم)
-  type: varchar('type', { length: 20 }).notNull(), // 'purchase', 'usage', 'bonus', 'refund'
+  amount: integer('amount').notNull(),
+  type: varchar('type', { length: 20 }).notNull(),
   description: text('description'),
   promptId: text('prompt_id').references(() => prompts.id, { onDelete: 'set null' }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
 // =============================================
-// العلاقات (Relations) للاستعلامات المتداخلة
+// العلاقات (Relations)
 // =============================================
 export const usersRelations = relations(users, ({ many }) => ({
   prompts: many(prompts),
@@ -133,4 +128,3 @@ export const transactionsRelations = relations(creditTransactions, ({ one }) => 
     references: [users.id],
   }),
 }));
-    https://prompt-master-2030-saa-s.vercel.app/setup
