@@ -1,6 +1,6 @@
 {
-  "name": "prompt-master-2030-saas",
-  "author": "Prompt Master Team",
+  "name": "saas-boilerplate",
+  "author": "Ixartz (https://github.com/ixartz)",
   "engines": {
     "node": ">=24"
   },
