@@ -31,8 +31,7 @@
     "storybook:test": "vitest run --config .storybook/vitest.config.ts",
     "build-storybook": "storybook build"
   },
-  "dependencies": {
-    "@clerk/localizations": "^4.8.1",
+  "dependencies": {"@paralleldrive/cuid2": "^3.0.0",
     "@clerk/nextjs": "^7.5.2",
     "@clerk/ui": "^1.16.1",
     "@logtape/logtape": "^2.1.5",
