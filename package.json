@@ -2,8 +2,8 @@
   "name": "saas-boilerplate",
   "author": "Ixartz (https://github.com/ixartz)",
   "engines": {
-    "node": "20.x"
-  },
+  "node": "24.x"
+}
   "scripts": {
     "dev:spotlight": "npx @spotlightjs/spotlight",
     "dev:next": "next dev",
