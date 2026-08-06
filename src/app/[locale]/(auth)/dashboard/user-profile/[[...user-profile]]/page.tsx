@@ -1,8 +1,13 @@
 import type { Metadata } from 'next';
-import { UserProfile } from '@clerk/nextjs';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { getI18nPath } from '@/utils/Helpers';
 import Link from 'next/link';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { verifyToken } from '@/libs/Auth';
+import { db } from '@/libs/DB';
+import { users } from '@/models/Schema';
+import { eq } from 'drizzle-orm';
 
 type ProfilePageProps = {
   params: Promise<{ locale: string }>;
@@ -31,7 +36,26 @@ export default async function ProfilePage(props: ProfilePageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
 
+  const t = await getTranslations({ locale, namespace: 'Profile' });
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
+
+  // ✅ التحقق من المصادقة
+  const cookieStore = await cookies();
+  const token = cookieStore.get('auth_token')?.value;
+
+  if (!token) {
+    redirect(getI18nPath('/sign-in', locale));
+  }
+
+  const decoded = verifyToken(token);
+  if (!decoded) {
+    redirect(getI18nPath('/sign-in', locale));
+  }
+
+  const user = await db.select().from(users).where(eq(users.id, decoded.userId));
+  if (!user[0]) {
+    redirect(getI18nPath('/sign-in', locale));
+  }
 
   return (
     <div 
@@ -54,50 +78,52 @@ export default async function ProfilePage(props: ProfilePageProps) {
           </p>
         </div>
 
-        {/* مكون Clerk لعرض وتعديل البروفايل */}
-        <UserProfile 
-          path={getI18nPath('/user-profile', locale)}
-          appearance={{
-            elements: {
-              rootBox: 'w-full',
-              card: [
-                'w-full',
-                'shadow-2xl',
-                'rounded-2xl',
-                'border',
-                'border-slate-200/50',
-                'dark:border-slate-800/50',
-                'bg-white/80',
-                'dark:bg-slate-950/80',
-                'backdrop-blur-sm',
-                'transition-all',
-                'duration-300',
-              ].join(' '),
-              headerTitle: [
-                'text-2xl',
-                'font-bold',
-                'text-slate-900',
-                'dark:text-white',
-              ].join(' '),
-              formButtonPrimary: [
-                'bg-gradient-to-r',
-                'from-blue-600',
-                'to-purple-600',
-                'hover:from-blue-700',
-                'hover:to-purple-700',
-                'text-white',
-                'font-semibold',
-                'py-2',
-                'px-6',
-                'rounded-lg',
-                'transition-all',
-                'duration-200',
-                'shadow-md',
-                'hover:shadow-lg',
-              ].join(' '),
-            },
-          }}
-        />
+        {/* ✅ صفحة البروفايل المخصصة (بدلاً من Clerk) */}
+        <div className="w-full rounded-2xl border border-slate-200/50 bg-white/80 p-6 shadow-lg backdrop-blur-sm dark:border-slate-800/50 dark:bg-slate-950/80">
+          <div className="flex items-center gap-6">
+            <div className="h-24 w-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-4xl font-bold text-white">
+              {user[0].name?.[0] || user[0].email[0]}
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                {user[0].name || 'مستخدم'}
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400">{user[0].email}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-500">
+                {locale === 'ar' ? 'الدور: ' : 'Role: '}
+                {user[0].role === 'admin' ? 'مدير' : user[0].role === 'user' ? 'مستخدم' : user[0].role}
+              </p>
+              <p className="text-sm text-slate-500 dark:text-slate-500">
+                {locale === 'ar' ? 'الرصيد: ' : 'Credits: '}
+                {user[0].credits}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6 border-t border-slate-200/50 pt-6 dark:border-slate-800/50">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+              {locale === 'ar' ? 'معلومات الحساب' : 'Account Info'}
+            </h3>
+            <dl className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <dt className="text-sm text-slate-500 dark:text-slate-400">
+                  {locale === 'ar' ? 'تاريخ الإنشاء' : 'Created At'}
+                </dt>
+                <dd className="text-slate-900 dark:text-white">
+                  {new Date(user[0].createdAt).toLocaleDateString(locale === 'ar' ? 'ar' : 'en')}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-sm text-slate-500 dark:text-slate-400">
+                  {locale === 'ar' ? 'آخر تحديث' : 'Last Updated'}
+                </dt>
+                <dd className="text-slate-900 dark:text-white">
+                  {new Date(user[0].updatedAt).toLocaleDateString(locale === 'ar' ? 'ar' : 'en')}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
       </div>
     </div>
   );
