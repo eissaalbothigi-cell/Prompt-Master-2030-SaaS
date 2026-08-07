@@ -1,71 +1,140 @@
 import type { NextConfig } from 'next';
 import withBundleAnalyzer from '@next/bundle-analyzer';
-import { withSentryConfig } from '@sentry/nextjs';
 import createNextIntlPlugin from 'next-intl/plugin';
 import './src/libs/Env';
 
-// Define the base Next.js configuration
+// ============================================================
+// 📦 Next.js Configuration - Prompt Master 2030
+// ============================================================
+// This file configures Next.js for the Prompt Master 2030 platform.
+// It includes optimization, security, and internationalization settings.
+
+// ============================================================
+// 1️⃣ Base Configuration (الإعدادات الأساسية)
+// ============================================================
 const baseConfig: NextConfig = {
+  // 🎨 إظهار مؤشرات التطوير في الزاوية اليمنى السفلية
   devIndicators: {
     position: 'bottom-right',
   },
+
+  // 🚫 إزالة رأس `X-Powered-By` لتحسين الأمان
   poweredByHeader: false,
+
+  // 🔒 تفعيل الوضع الصارم لـ React
   reactStrictMode: true,
-  reactCompiler: process.env.NODE_ENV === 'production', // Keep the development environment fast
+
+  // ⚡ تفعيل React Compiler في الإنتاج فقط (تحسين الأداء)
+  reactCompiler: process.env.NODE_ENV === 'production',
+
+  // 📊 إعدادات التسجيل (Logging)
   logging: {
     browserToTerminal: process.env.BROWSER_TO_TERMINAL_DISABLED !== 'true',
   },
+
+  // 🗄️ تضمين ملفات الهجرات في مسار الإنتاج
   outputFileTracingIncludes: {
-    '/': ['./migrations/**/*'],
+    '/': ['./drizzle/migrations/**/*'],
+  },
+
+  // 🖼️ دعم الصور من مصادر خارجية
+  images: {
+    domains: [
+      'localhost',
+      'prompt-master-2030.vercel.app',
+      'images.unsplash.com',
+      'avatars.githubusercontent.com',
+    ],
+    formats: ['image/avif', 'image/webp'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.vercel.app',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.unsplash.com',
+      },
+    ],
+  },
+
+  // 🔐 إعدادات الأمان (Security Headers)
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+        ],
+      },
+    ];
+  },
+
+  // 🔄 إعادة التوجيهات (Redirects)
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/ar',
+        permanent: true,
+      },
+    ];
+  },
+
+  // 📦 إعدادات Webpack (تحسين الحزم)
+  webpack: (config, { isServer, webpack }) => {
+    // تحسين حجم الحزمة
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+    }
+
+    // تجاهل التحذيرات غير الضرورية
+    config.ignoreWarnings = [
+      { module: /node_modules\/@paralleldrive\/cuid2/ },
+    ];
+
+    return config;
   },
 };
 
-// Initialize the Next-Intl plugin
+// ============================================================
+// 2️⃣ Plugins Integration (دمج الإضافات)
+// ============================================================
+
+// 🔤 دعم التدويل (i18n) عبر next-intl
 let configWithPlugins = createNextIntlPlugin('./src/libs/I18n.ts')(baseConfig);
 
-// Conditionally enable bundle analysis
+// 📊 تحليل حجم الحزمة (اختياري، يُفعّل عند تعيين ANALYZE=true)
 if (process.env.ANALYZE === 'true') {
   configWithPlugins = withBundleAnalyzer()(configWithPlugins);
 }
 
-// Conditionally enable Sentry configuration
-if (!process.env.NEXT_PUBLIC_SENTRY_DISABLED) {
-  configWithPlugins = withSentryConfig(configWithPlugins, {
-    // For all available options, see:
-    // https://www.npmjs.com/package/@sentry/webpack-plugin#options
-    org: process.env.SENTRY_ORGANIZATION,
-    project: process.env.SENTRY_PROJECT,
+// ❌ تم إزالة Sentry نهائياً لأننا لا نستخدمه
+// ❌ تم إزالة @sentry/nextjs من التبعيات
 
-    // Only print logs for uploading source maps in CI
-    silent: !process.env.CI,
-
-    // For all available options, see:
-    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
-
-    // Upload a larger set of source maps for prettier stack traces (increases build time)
-    widenClientFileUpload: true,
-
-    // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-    // This can increase your server load as well as your hosting bill.
-    // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
-    // side errors will fail.
-    tunnelRoute: '/monitoring',
-
-    webpack: {
-      reactComponentAnnotation: {
-        enabled: true,
-      },
-
-      // Tree-shake Sentry logger statements to reduce bundle size
-      treeshake: {
-        removeDebugLogging: true,
-      },
-    },
-
-    // Disable Sentry telemetry
-    telemetry: false,
-  });
-}
+// ============================================================
+// 3️⃣ Export (التصدير النهائي)
+// ============================================================
 
 const nextConfig = configWithPlugins;
 export default nextConfig;
