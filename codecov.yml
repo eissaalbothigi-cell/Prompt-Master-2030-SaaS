@@ -1,3 +1,90 @@
+# ============================================================
+# 📊 Codecov Configuration - Prompt Master 2030
+# ============================================================
+# This file configures Codecov for the Prompt Master 2030 project.
+# Codecov is used for code coverage reporting in CI/CD pipelines.
+
+# ============================================================
+# 🎯 Coverage Settings
+# ============================================================
 coverage:
   status:
+    # 🚫 Disable patch status (avoid blocking PRs for small changes)
     patch: off
+    
+    # ✅ Project status (overall coverage)
+    project:
+      default:
+        target: 70%  # Minimum coverage threshold
+        threshold: 5%  # Allow 5% fluctuation
+        base: auto  # Use base commit as reference
+        branches:
+          - main
+          - develop
+
+# ============================================================
+# 📁 Ignore specific files or folders
+# ============================================================
+ignore:
+  - "**/node_modules/**"
+  - "**/dist/**"
+  - "**/build/**"
+  - "**/.next/**"
+  - "**/out/**"
+  - "**/tests/**"
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
+  - "**/*.stories.tsx"
+  - "**/*.config.js"
+  - "**/*.config.ts"
+  - "**/drizzle/**"  # Migration files
+  - "**/public/**"   # Static assets
+  - "**/styles/**"   # CSS files
+
+# ============================================================
+# 📤 Comment settings (PR comments)
+# ============================================================
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+
+# ============================================================
+# 🏷️ Flags (optional grouping)
+# ============================================================
+flags:
+  frontend:
+    paths:
+      - "src/app/**"
+      - "src/components/**"
+    carryforward: true
+
+  backend:
+    paths:
+      - "src/app/api/**"
+      - "src/libs/**"
+      - "src/models/**"
+    carryforward: true
+
+  shared:
+    paths:
+      - "src/utils/**"
+      - "src/types/**"
+    carryforward: true
+
+# ============================================================
+# ⚙️ Notifications
+# ============================================================
+notifications:
+  webhooks:
+    - url: https://webhooks.example.com/codecov  # Optional: Add your webhook URL
+
+# ============================================================
+# 🛠️ Codecov CLI settings
+# ============================================================
+codecov:
+  require_ci_to_pass: true
+  notify:
+    wait_for_ci: true
