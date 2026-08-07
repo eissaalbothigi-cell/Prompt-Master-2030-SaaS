@@ -1,89 +1,118 @@
-import type { ChromaticConfig } from '@chromatic-com/playwright';
 import { defineConfig, devices } from '@playwright/test';
+import type { ChromaticConfig } from '@chromatic-com/playwright';
 
-// Use process.env.PORT by default and fallback to port 3008
-// to avoid conflicts with the Next.js default port 3000.
+// ============================================================
+// 🧪 Playwright Configuration - Prompt Master 2030
+// ============================================================
+// This file configures Playwright for end-to-end testing.
+// It uses Next.js dev server and Neon database (PostgreSQL).
+
+// ============================================================
+// 1️⃣ Server Configuration (إعدادات الخادم)
+// ============================================================
+
 const PORT = process.env.PORT ?? '3008';
-
-// Set webServer.url and use.baseURL with the location of the WebServer respecting the correct set port
 const baseURL = `http://localhost:${PORT}`;
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
-export default defineConfig<ChromaticConfig>({
-  testDir: './tests',
-  // Look for files with the .integ.js or .e2e.js extension
-  testMatch: '*.@(integ|e2e).?(c|m)[jt]s?(x)',
-  // Timeout per test, test running locally are slower due to database connections with PGLite
-  timeout: 30 * 1000,
-  // Fail the build on CI if you accidentally left test.only in the source code.
-  forbidOnly: !!process.env.CI,
-  // Reporter to use. See https://playwright.dev/docs/test-reporters
-  reporter: process.env.CI ? 'github' : 'list',
+const isCI = !!process.env.CI;
+const isProduction = process.env.NODE_ENV === 'production';
 
+// ============================================================
+// 2️⃣ Playwright Config (الإعدادات الأساسية)
+// ============================================================
+
+export default defineConfig<ChromaticConfig>({
+  // 📂 مسار الاختبارات
+  testDir: './tests',
+
+  // 🎯 ملفات الاختبار (E2E و Integration)
+  testMatch: '*.@(integ|e2e).?(c|m)[jt]s?(x)',
+
+  // ⏱️ المهلة لكل اختبار (30 ثانية)
+  timeout: 30 * 1000,
+
+  // 🚫 منع استخدام `test.only` في CI
+  forbidOnly: isCI,
+
+  // 📊 التقرير (GitHub Actions أو القائمة)
+  reporter: isCI ? 'github' : 'list',
+
+  // 🔍 توقعات (Expect)
   expect: {
-    // Set timeout for async expect matchers
     timeout: 15 * 1000,
   },
 
-  // Run your local dev server before starting the tests:
-  // https://playwright.dev/docs/test-advanced#launching-a-development-web-server-during-the-tests
+  // ============================================================
+  // 🌐 خادم التطوير (Dev Server)
+  // ============================================================
+
   webServer: {
-    command: process.env.CI
-      ? 'pglite-server -m 100 --run \'run-s db:migrate start\''
-      : 'pglite-server -m 100 --run \'run-s db:migrate dev:next\'',
+    // 🚀 تشغيل Next.js في وضع التطوير (مع قاعدة بيانات حقيقية)
+    command: isCI
+      ? 'npm run build && npm run start' // في CI: بناء ثم تشغيل
+      : 'npm run dev', // محلياً: تشغيل مباشر
+
     url: baseURL,
     timeout: 60 * 1000,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !isCI,
     gracefulShutdown: { signal: 'SIGTERM', timeout: 2 * 1000 },
+
+    // 🌍 متغيرات البيئة للخادم
     env: {
       BROWSER_TO_TERMINAL_DISABLED: 'true',
-      NEXT_PUBLIC_SENTRY_DISABLED: 'true',
       NEXT_PUBLIC_APP_URL: baseURL,
       PORT,
+      NODE_ENV: isProduction ? 'production' : 'development',
     },
   },
 
-  // Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions.
+  // ============================================================
+  // 🛠️ إعدادات الاستخدام (Use)
+  // ============================================================
+
   use: {
-    // Use baseURL so to make navigations relative.
-    // More information: https://playwright.dev/docs/api/class-testoptions#test-options-base-url
     baseURL,
-
-    // Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer
-    trace: process.env.CI ? 'on' : 'retain-on-failure',
-
-    // Record videos when retrying the failed test.
-    video: process.env.CI ? 'retain-on-failure' : undefined,
-
-    // Disable automatic screenshots at test completion when using Chromatic test fixture.
+    trace: isCI ? 'on' : 'retain-on-failure',
+    video: isCI ? 'retain-on-failure' : undefined,
     disableAutoSnapshot: true,
   },
 
+  // ============================================================
+  // 🌐 المتصفحات المدعومة (Browsers)
+  // ============================================================
+
   projects: [
-    // `setup` and `teardown` are used to run code before and after all E2E tests.
-    // These functions can be used to configure Clerk for testing purposes. For example, bypassing bot detection.
-    // In the `setup` file, you can create an account in `Test mode`.
-    // For each test, an organization can be created within this account to ensure total isolation.
-    // After all tests are completed, the `teardown` file can delete the account and all associated organizations.
-    // You can find the `setup` and `teardown` files at: https://nextjs-boilerplate.com/pro-saas-starter-kit
-    // Or, need a Self-hosted auth stack (Better Auth)? Try Next.js Boilerplate Max: https://nextjs-boilerplate.com/nextjs-multi-tenant-saas-boilerplate
-    { name: 'setup', testMatch: /.*\.setup\.ts/, teardown: 'teardown' },
-    { name: 'teardown', testMatch: /.*\.teardown\.ts/ },
+    // 🟢 Chromium (Chrome, Edge, Opera)
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-      dependencies: ['setup'],
     },
-    ...(process.env.CI
+
+    // 🟠 Firefox (في CI فقط لتوفير الوقت)
+    ...(isCI
       ? [
           {
             name: 'firefox',
             use: { ...devices['Desktop Firefox'] },
-            dependencies: ['setup'],
           },
         ]
       : []),
+
+    // 📱 Mobile Safari (محاكاة الهواتف)
+    // ...(isCI
+    //   ? [
+    //       {
+    //         name: 'mobile-chrome',
+    //         use: { ...devices['Pixel 5'] },
+    //       },
+    //     ]
+    //   : []),
   ],
+
+  // ============================================================
+  // 📌 ملاحظات إضافية
+  // ============================================================
+  // 1️⃣ تأكد من تشغيل قاعدة البيانات (Neon) قبل الاختبارات
+  // 2️⃣ استخدم `npm run test:e2e` لتشغيل الاختبارات
+  // 3️⃣ لتصحيح الأخطاء: `npx playwright test --debug`
 });
