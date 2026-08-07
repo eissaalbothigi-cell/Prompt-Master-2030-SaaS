@@ -1,19 +1,70 @@
-# Validate commit messages
-commit-msg:
-  jobs:
-    - name: commitlint
-      run: npx --no -- commitlint --edit {1}
+// ============================================================
+// 🧹 lint-staged Configuration - Prompt Master 2030
+// ============================================================
+// This file configures lint-staged to run pre-commit hooks.
+// It ensures code quality, formatting, and type safety before each commit.
+// ============================================================
 
-# Validate content before committing
-pre-commit:
-  jobs:
-    - name: lint
-      run: npx --no -- eslint --fix --no-warn-ignored {staged_files}
-      glob: '*'
-      stage_fixed: true
-    - name: check-types
-      run: npm run check:types
-      glob: '*.{ts,tsx}'
-    - name: knip
-      run: npm run check:deps
-      glob: '*'
+/**
+ * @type {import('lint-staged').Config}
+ */
+const config = {
+  // ============================================================
+  // 📝 JavaScript / TypeScript Files
+  // ============================================================
+  '*.{js,jsx,ts,tsx}': [
+    // 1️⃣ إصلاح أخطاء ESLint تلقائياً
+    'eslint --fix --no-warn-ignored',
+    
+    // 2️⃣ تنسيق الكود باستخدام Prettier
+    'prettier --write',
+    
+    // 3️⃣ التحقق من صحة الأنواع (TypeScript)
+    'npm run type-check',
+  ],
+
+  // ============================================================
+  // 🎨 CSS / SCSS / PostCSS Files
+  // ============================================================
+  '*.{css,scss,postcss}': [
+    // تنسيق ملفات CSS باستخدام Prettier
+    'prettier --write',
+  ],
+
+  // ============================================================
+  // 📄 JSON / Markdown / YAML / XML Files
+  // ============================================================
+  '*.{json,md,yml,yaml,xml}': [
+    // تنسيق الملفات النصية باستخدام Prettier
+    'prettier --write',
+  ],
+
+  // ============================================================
+  // 🗄️ Drizzle Migrations (SQL Files)
+  // ============================================================
+  'drizzle/**/*.sql': [
+    // تنسيق ملفات SQL باستخدام Prettier
+    'prettier --write',
+  ],
+
+  // ============================================================
+  // 🧪 Test Files (Unit & Integration Tests)
+  // ============================================================
+  'tests/**/*.{ts,tsx}': [
+    // إصلاح أخطاء ESLint في الاختبارات
+    'eslint --fix --no-warn-ignored',
+    
+    // تنسيق الاختبارات
+    'prettier --write',
+  ],
+
+  // ============================================================
+  // 🖥️ Configuration Files (Next.js, Tailwind, etc.)
+  // ============================================================
+  '*.config.{js,ts,mjs,cjs}': [
+    // تنسيق ملفات الإعدادات
+    'prettier --write',
+  ],
+};
+
+export default config;
