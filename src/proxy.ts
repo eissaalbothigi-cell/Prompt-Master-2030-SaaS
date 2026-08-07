@@ -1,74 +1,136 @@
 import type { NextFetchEvent, NextRequest } from 'next/server';
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
-import createMiddleware from 'next-intl/middleware';
 import { NextResponse } from 'next/server';
+import createMiddleware from 'next-intl/middleware';
 import { routing } from './libs/I18nRouting';
+import { verifyToken } from './libs/Auth';
 
+// ============================================================
+// 🌐 1. تدويل (i18n) - next-intl
+// ============================================================
 const handleI18nRouting = createMiddleware(routing);
 
-const isProtectedRoute = createRouteMatcher([
-  '/dashboard(.*)',
-  '/:locale/dashboard(.*)',
-  '/onboarding(.*)',
-  '/:locale/onboarding(.*)',
-]);
+// ============================================================
+// 🛡️ 2. تحديد المسارات المحمية والعامة
+// ============================================================
 
-const isAuthPage = createRouteMatcher([
-  '/sign-in(.*)',
-  '/:locale/sign-in(.*)',
-  '/sign-up(.*)',
-  '/:locale/sign-up(.*)',
-]);
+/**
+ * المسارات التي تتطلب مصادقة (تسجيل دخول)
+ */
+const PROTECTED_ROUTES = [
+  '/dashboard',
+  '/dashboard/:path*',
+  '/onboarding',
+  '/onboarding/:path*',
+  '/user-profile',
+  '/user-profile/:path*',
+  '/organization-profile',
+  '/organization-profile/:path*',
+  '/generator',
+  '/generator/:path*',
+  '/prompts',
+  '/prompts/:path*',
+  '/settings',
+  '/settings/:path*',
+];
+
+/**
+ * المسارات العامة (لا تتطلب مصادقة)
+ */
+const PUBLIC_ROUTES = [
+  '/sign-in',
+  '/sign-in/:path*',
+  '/sign-up',
+  '/sign-up/:path*',
+  '/',
+  '/about',
+  '/pricing',
+  '/contact',
+  '/terms',
+  '/privacy',
+];
+
+/**
+ * التحقق مما إذا كان المسار محمياً
+ */
+function isProtectedRoute(pathname: string): boolean {
+  return PROTECTED_ROUTES.some((route) => {
+    const pattern = new RegExp(`^${route.replace(':path*', '.*')}$`);
+    return pattern.test(pathname);
+  });
+}
+
+/**
+ * التحقق مما إذا كان المسار عاماً
+ */
+function isPublicRoute(pathname: string): boolean {
+  return PUBLIC_ROUTES.some((route) => {
+    const pattern = new RegExp(`^${route.replace(':path*', '.*')}$`);
+    return pattern.test(pathname);
+  });
+}
+
+// ============================================================
+// 🚀 3. Middleware الرئيسي
+// ============================================================
 
 export default async function proxy(
   request: NextRequest,
   event: NextFetchEvent,
 ) {
-  // Clerk keyless mode doesn't work with i18n, this is why we need to run the middleware conditionally
-  if (
-    isAuthPage(request) || isProtectedRoute(request)
-  ) {
-    return clerkMiddleware(async (auth, req) => {
-      // Check if the current route is protected and requires authentication
-      // If user is not authenticated, redirect them to the sign-in page with proper locale
-      if (isProtectedRoute(req)) {
-        const locale = req.nextUrl.pathname.match(/(\/.*)\/dashboard/)?.at(1) ?? '';
+  const { pathname } = request.nextUrl;
 
-        const signInUrl = new URL(`${locale}/sign-in`, req.url);
+  // 🔤 استخراج اللغة من المسار (مثل `/ar/dashboard`)
+  const locale = pathname.match(/^\/([a-z]{2})\//)?.[1] || 'ar';
 
-        await auth.protect({
-          unauthenticatedUrl: signInUrl.toString(),
-        });
-      }
+  // 🔐 3.1 التحقق من المصادقة (بدلاً من Clerk)
+  if (isProtectedRoute(pathname)) {
+    // قراءة التوكن من الكوكيز
+    const token = request.cookies.get('auth_token')?.value;
 
-      const authObj = await auth();
+    // إذا لم يكن هناك توكن → إعادة التوجيه إلى تسجيل الدخول
+    if (!token) {
+      const signInUrl = new URL(`/${locale}/sign-in`, request.url);
+      signInUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(signInUrl);
+    }
 
-      // Redirect authenticated users without an organization to the organization selection page
-      // This ensures users are properly associated with an organization before accessing the dashboard
-      if (
-        authObj.userId
-        && !authObj.orgId
-        && req.nextUrl.pathname.includes('/dashboard')
-        && !req.nextUrl.pathname.endsWith('/organization-selection')
-      ) {
-        const orgSelection = new URL(
-          '/onboarding/organization-selection',
-          req.url,
-        );
+    // التحقق من صحة التوكن
+    const decoded = verifyToken(token);
+    if (!decoded) {
+      const signInUrl = new URL(`/${locale}/sign-in`, request.url);
+      signInUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(signInUrl);
+    }
 
-        return NextResponse.redirect(orgSelection);
-      }
-
-      return handleI18nRouting(req);
-    })(request, event);
+    // ✅ التوكن صحيح، نسمح بالمرور
+    // (يمكن إضافة بيانات المستخدم إلى الطلب إذا لزم الأمر)
   }
 
-  return handleI18nRouting(request);
+  // 🧭 3.2 إعادة التوجيه التلقائي من `/` إلى `/ar`
+  if (pathname === '/') {
+    const redirectUrl = new URL('/ar', request.url);
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  // 🌍 3.3 التعامل مع التدويل (i18n)
+  const response = handleI18nRouting(request);
+
+  // ✅ إضافة رؤوس الأمان
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+  return response;
 }
 
+// ============================================================
+// ⚙️ 4. إعدادات المطابقة (Matcher)
+// ============================================================
+
 export const config = {
-  // Match all pathnames except for
-  // - … if they start with `/_next`, `/_vercel` or `monitoring`
-  // - … the ones containing a dot (e.g. `favicon.ico`)
+  // 🎯 تطبيق الميدلوير على جميع المسارات باستثناء:
+  // - _next, _vercel, monitoring (ملفات النظام)
+  // - الملفات ذات الامتدادات (صور، CSS، JS)
   matcher: '/((?!_next|_vercel|monitoring|.*\\..*).*)',
 };
