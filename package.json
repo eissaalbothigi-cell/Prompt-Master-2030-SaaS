@@ -2,6 +2,10 @@
   "name": "prompt-master-2030",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "20.x"
+  },
+  "packageManager": "npm@10.9.2",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,40 +14,56 @@
     "type-check": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:e2e": "playwright test",
+    "test:coverage": "vitest --coverage",
+    "pre-commit": "lint-staged",
+    "prepare": "husky"
   },
   "dependencies": {
-    "next": "16.2.9",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "@t3-oss/env-nextjs": "^0.12.0",
-    "zod": "^3.24.1",
-    "next-intl": "^4.0.0",
-    "drizzle-orm": "^0.38.0",
-    "pg": "^8.13.1",
     "@paralleldrive/cuid2": "^2.2.2",
+    "@t3-oss/env-nextjs": "^0.12.0",
     "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
-    "cookie": "^0.7.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "cookie": "^0.7.2",
+    "drizzle-orm": "^0.38.0",
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.473.0",
+    "next": "16.2.9",
+    "next-intl": "^4.0.0",
+    "pg": "^8.13.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "tailwind-merge": "^2.5.4",
-    "lucide-react": "^0.473.0"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@chromatic-com/playwright": "^1.0.0",
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
+    "@eslint/eslintrc": "^3.2.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "^2.1.8",
+    "@vitest/ui": "^2.1.8",
     "drizzle-kit": "^0.30.0",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.1.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10",
+    "playwright": "^1.49.1",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.2"
-  },
-  "engines": {
-    "node": "20.x"
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   }
 }
