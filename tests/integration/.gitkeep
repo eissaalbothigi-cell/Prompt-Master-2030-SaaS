@@ -1,3 +1,117 @@
-Place your integration tests in this folder by creating files with the `*.integ.ts` extension. These files will be automatically detected by Playwright. For a real-world example, you can check out the Next.js Boilerplate Pro at https://nextjs-boilerplate.com/pro-saas-starter-kit
+# 🧪 Integration Tests - Prompt Master 2030
 
-Or, need a Self-hosted auth stack (Better Auth)? Try Next.js Boilerplate Max: https://nextjs-boilerplate.com/nextjs-multi-tenant-saas-boilerplate
+هذا المجلد مخصص لاختبارات التكامل (Integration Tests) في منصة **Prompt Master 2030**.
+
+---
+
+## 📌 ما هي اختبارات التكامل؟
+
+اختبارات التكامل تتحقق من أن **الأجزاء المختلفة من المنصة تعمل معاً بشكل صحيح**، مثل:
+- التفاعل بين قاعدة البيانات وواجهة المستخدم.
+- التفاعل بين نظام المصادقة (JWT) ولوحة التحكم.
+- التفاعل بين الـ API وقاعدة البيانات.
+
+---
+
+## 📂 هيكل المجلد
+
+```
+tests/integration/
+├── README.md                           # هذا الملف
+├── auth.integ.ts                       # اختبارات المصادقة (تسجيل الدخول، إنشاء حساب، تسجيل الخروج)
+├── database.integ.ts                   # اختبارات قاعدة البيانات (الإضافة، التعديل، الحذف)
+├── api.integ.ts                        # اختبارات الـ API (الطلبات والاستجابات)
+└── dashboard.integ.ts                  # اختبارات لوحة التحكم
+```
+
+---
+
+## 🛠️ كيفية تشغيل الاختبارات
+
+### تشغيل جميع اختبارات التكامل:
+```bash
+npm run test:e2e
+```
+
+### تشغيل اختبار معين فقط:
+```bash
+npx playwright test tests/integration/auth.integ.ts
+```
+
+### تشغيل الاختبارات مع واجهة مرئية:
+```bash
+npx playwright test --headed
+```
+
+---
+
+## 📝 كيفية كتابة اختبار تكامل جديد
+
+1. **أنشئ ملفاً جديداً** في هذا المجلد باسم ينتهي بـ `.integ.ts`.
+2. **استورد الأدوات المطلوبة**:
+   ```ts
+   import { expect, test } from '@playwright/test';
+   ```
+3. **اكتب الاختبار** مع وصف واضح للخطوات.
+4. **تأكد من وجود بيانات مسبقة** في قاعدة البيانات (يمكن استخدام `test.beforeEach`).
+
+---
+
+## 🔍 أمثلة على اختبارات التكامل
+
+### ✅ اختبار المصادقة (تسجيل الدخول):
+```ts
+test('should login successfully with valid credentials', async ({ page }) => {
+  await page.goto('/sign-in');
+  await page.fill('input[name="email"]', 'test@example.com');
+  await page.fill('input[name="password"]', 'password123');
+  await page.click('button[type="submit"]');
+  await expect(page).toHaveURL(/\/dashboard/);
+  await expect(page.getByText('Welcome back, Test User')).toBeVisible();
+});
+```
+
+### ✅ اختبار قاعدة البيانات (إنشاء برومبت):
+```ts
+test('should create a new prompt', async ({ page }) => {
+  await page.goto('/dashboard/generator');
+  await page.fill('textarea[name="description"]', 'Test prompt description');
+  await page.click('button[type="submit"]');
+  await expect(page.getByText('Prompt created successfully')).toBeVisible();
+  await expect(page.getByText('Test prompt description')).toBeVisible();
+});
+```
+
+### ✅ اختبار الـ API:
+```ts
+test('should return user data from /api/user', async ({ request }) => {
+  const response = await request.get('/api/user');
+  expect(response.ok()).toBeTruthy();
+  const data = await response.json();
+  expect(data).toHaveProperty('id');
+  expect(data).toHaveProperty('email');
+});
+```
+
+---
+
+## 🎯 القواعد الذهبية
+
+| القاعدة | التوضيح |
+| :--- | :--- |
+| **العزلة** | كل اختبار يجب أن يكون مستقلاً عن الآخر. |
+| **النظافة** | استخدم `test.beforeEach` و `test.afterEach` لتنظيف البيانات. |
+| **الوضوح** | اكتب وصفاً واضحاً لكل اختبار يشرح ما يختبره. |
+| **السرعة** | اجعل الاختبارات سريعة بقدر الإمكان. |
+
+---
+
+## 🔗 روابط مفيدة
+
+- [Playwright Documentation](https://playwright.dev/docs/intro)
+- [Next.js Testing Guide](https://nextjs.org/docs/testing)
+- [Chromatic Visual Testing](https://www.chromatic.com/)
+
+---
+
+**تم الإنشاء بواسطة المحرك السيادي للمنصة - Prompt Master 2030** 🚀
