@@ -1,47 +1,63 @@
-// This file configures the initialization of Sentry on the client.
-// The added config here will be used whenever a users loads a page in their browser.
-// https://docs.sentry.io/platforms/javascript/guides/nextjs/
+// ============================================================
+// 📡 Sentry Client Configuration - Prompt Master 2030
+// ============================================================
+// This file configures Sentry on the client side (browser).
+// It captures errors, performance traces, and user sessions.
+// 
+// 🔗 Documentation: https://docs.sentry.io/platforms/javascript/guides/nextjs/
+// ============================================================
+
 import * as Sentry from '@sentry/nextjs';
 
+// ❌ Skip Sentry initialization if disabled via environment variable
 if (!process.env.NEXT_PUBLIC_SENTRY_DISABLED) {
   Sentry.init({
+    // 🎯 Sentry DSN (Data Source Name)
     dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
-    // Add optional integrations for additional features
+    // 🔌 Integrations
     integrations: [
+      // 🎥 Session Replay (captures user interactions)
       Sentry.replayIntegration({
-        maskAllText: false,
-        maskAllInputs: false,
-        blockAllMedia: false,
+        maskAllText: false, // Show text in replays (for debugging)
+        maskAllInputs: false, // Show input values (for debugging)
+        blockAllMedia: false, // Show images and videos (for debugging)
       }),
+
+      // 📝 Log console messages to Sentry
       Sentry.consoleLoggingIntegration(),
+
+      // 🔄 Browser performance tracing
       Sentry.browserTracingIntegration(),
 
+      // 💡 Spotlight integration (local debugging)
       ...(process.env.NODE_ENV === 'development'
         ? [Sentry.spotlightBrowserIntegration()]
         : []),
     ],
 
-    // Adds request headers and IP for users, for more info visit
+    // 👤 Send request headers and IP for users (for better debugging)
     sendDefaultPii: true,
 
-    // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-    tracesSampleRate: 1,
+    // 📊 Traces Sample Rate (adjust in production)
+    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
 
-    // Define how likely Replay events are sampled.
-    // This sets the sample rate to be 10%. You may want this to be 100% while
-    // in development and sample at a lower rate in production
-    replaysSessionSampleRate: 0.1,
+    // 🎥 Replay Session Sample Rate
+    replaysSessionSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
 
-    // Define how likely Replay events are sampled when an error occurs.
+    // 🎥 Replay on Error Sample Rate (always capture when an error occurs)
     replaysOnErrorSampleRate: 1.0,
 
-    // Enable logs to be sent to Sentry
+    // 📝 Enable logs to be sent to Sentry
     enableLogs: true,
 
-    // Setting this option to true will print useful information to the console while you're setting up Sentry.
-    debug: false,
+    // 🐞 Enable debug mode (set to false in production)
+    debug: process.env.NODE_ENV !== 'production',
   });
 }
+
+// ============================================================
+// 🚀 Router Transition Tracking
+// ============================================================
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
