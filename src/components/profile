@@ -1,37 +1,56 @@
 'use client';
 
-import { useState } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 
 interface ProfileFormProps {
-  user: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    imageUrl: string;
-    bio: string;
-    jobTitle: string;
-  };
   locale: string;
 }
 
-export function ProfileForm({ user, locale }: ProfileFormProps) {
-  const { user: clerkUser, isLoaded } = useUser();
+export function ProfileForm({ locale }: ProfileFormProps) {
   const t = useTranslations('UserProfilePage');
 
+  const [user, setUser] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    imageUrl: '/default-avatar.png',
+    bio: '',
+    jobTitle: '',
+  });
+
   const [form, setForm] = useState({
-    firstName: user.firstName,
-    lastName: user.lastName,
-    bio: user.bio,
-    jobTitle: user.jobTitle,
+    firstName: '',
+    lastName: '',
+    bio: '',
+    jobTitle: '',
   });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  if (!isLoaded) return <div className="p-8 text-center">⏳ {t('loading')}</div>;
+  // جلب بيانات المستخدم من الـ API
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch('/api/user/profile');
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data);
+          setForm({
+            firstName: data.firstName || '',
+            lastName: data.lastName || '',
+            bio: data.bio || '',
+            jobTitle: data.jobTitle || '',
+          });
+        }
+      } catch (error) {
+        console.error('فشل جلب البيانات:', error);
+      }
+    };
+    fetchUser();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -43,18 +62,18 @@ export function ProfileForm({ user, locale }: ProfileFormProps) {
     setMessage('');
 
     try {
-      await clerkUser?.update({
-        firstName: form.firstName,
-        lastName: form.lastName,
-        unsafeMetadata: {
-          bio: form.bio,
-          jobTitle: form.jobTitle,
-        },
+      const res = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
       });
-      setMessage(t('success'));
-    } catch (err) {
-      setMessage(t('error'));
-      console.error(err);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'فشل التحديث');
+      setMessage('✅ تم حفظ الملف الشخصي بنجاح');
+      // تحديث البيانات المعروضة
+      setUser((prev) => ({ ...prev, ...form }));
+    } catch (err: any) {
+      setMessage('❌ ' + (err.message || 'حدث خطأ'));
     } finally {
       setLoading(false);
     }
@@ -68,7 +87,7 @@ export function ProfileForm({ user, locale }: ProfileFormProps) {
         <div className="relative -mt-16 mb-6 flex justify-center">
           <div className="relative w-32 h-32 rounded-full border-4 border-white dark:border-slate-800 overflow-hidden shadow-lg bg-white">
             <Image
-              src={user.imageUrl || '/default-avatar.png'}
+              src={user.imageUrl}
               alt={t('avatar_alt')}
               fill
               className="object-cover"
@@ -140,7 +159,7 @@ export function ProfileForm({ user, locale }: ProfileFormProps) {
           {message && (
             <div
               className={`p-3 rounded-lg text-sm text-center ${
-                message === t('success')
+                message.startsWith('✅')
                   ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400'
                   : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'
               }`}
