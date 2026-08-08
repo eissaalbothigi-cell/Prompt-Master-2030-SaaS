@@ -1,6 +1,10 @@
+import type { VariantProps } from 'class-variance-authority';
+import { Slot } from '@radix-ui/react-slot';
 import { cva } from 'class-variance-authority';
+import { cn } from '@/utils/Helpers';
 
-export const buttonVariants = cva(
+// تعريف buttonVariants مدمج داخل الملف (لا تحتاج ملف خارجي)
+const buttonVariants = cva(
   `
     inline-flex shrink-0 cursor-pointer items-center justify-center gap-2
     rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none
@@ -69,5 +73,28 @@ export const buttonVariants = cva(
       variant: 'default',
       size: 'default',
     },
-  },
+  }
 );
+
+function Button({
+  className,
+  variant,
+  size,
+  asChild = false,
+  ...props
+}: React.ComponentProps<'button'> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean;
+  }) {
+  const Comp = asChild ? Slot : 'button';
+
+  return (
+    <Comp
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size }), className)}
+      {...props}
+    />
+  );
+}
+
+export { Button };
