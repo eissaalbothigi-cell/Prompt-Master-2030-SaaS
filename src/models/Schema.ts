@@ -12,16 +12,20 @@ import { relations } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
 // =============================================
-// 1. جدول المستخدمين (ربط مع Clerk)
+// 1. جدول المستخدمين (نظام JWT)
 // =============================================
 export const users = pgTable('users', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
-  clerkId: text('clerk_id').unique().notNull(),
-  email: text('email').notNull(),
-  name: text('name'),
+  email: text('email').notNull().unique(),
+  password: text('password').notNull(),
+  firstName: text('first_name'),
+  lastName: text('last_name'),
   avatarUrl: text('avatar_url'),
+  bio: text('bio'),
+  jobTitle: text('job_title'),
   role: text('role').default('user').notNull(),
-  credits: integer('credits').default(10).notNull(),
+  credits: integer('credits').default(50).notNull(),
+  isActive: boolean('is_active').default(true),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -36,7 +40,9 @@ export const promptFrameworks = pgTable('prompt_frameworks', {
   icon: varchar('icon', { length: 10 }).default('📝'),
   description: text('description').notNull(),
   structure: jsonb('structure').notNull().$type<Record<string, string>>(),
+  systemPrompt: text('system_prompt'),
   isActive: boolean('is_active').default(true),
+  createdBy: text('created_by').references(() => users.id, { onDelete: 'set null' }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -47,9 +53,11 @@ export const promptFrameworks = pgTable('prompt_frameworks', {
 export const prompts = pgTable('prompts', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   title: varchar('title', { length: 255 }).notNull(),
+  description: text('description'),
   frameworkId: integer('framework_id').references(() => promptFrameworks.id, { onDelete: 'set null' }),
-  inputData: jsonb('input_data').notNull().$type<Record<string, string>>(),
+  inputData: jsonb('input_data').$type<Record<string, string>>(),
   output: text('output'),
+  content: text('content'),
   status: varchar('status', { length: 20 }).default('draft'),
   isPublic: boolean('is_public').default(false),
   views: integer('views').default(0),
@@ -88,7 +96,7 @@ export const creditTransactions = pgTable('credit_transactions', {
 });
 
 // =============================================
-// العلاقات (Relations)
+// 6. العلاقات (Relations)
 // =============================================
 export const usersRelations = relations(users, ({ many }) => ({
   prompts: many(prompts),
@@ -96,8 +104,12 @@ export const usersRelations = relations(users, ({ many }) => ({
   transactions: many(creditTransactions),
 }));
 
-export const frameworksRelations = relations(promptFrameworks, ({ many }) => ({
+export const frameworksRelations = relations(promptFrameworks, ({ many, one }) => ({
   prompts: many(prompts),
+  creator: one(users, {
+    fields: [promptFrameworks.createdBy],
+    references: [users.id],
+  }),
 }));
 
 export const promptsRelations = relations(prompts, ({ one }) => ({
@@ -129,3 +141,16 @@ export const transactionsRelations = relations(creditTransactions, ({ one }) => 
   }),
 }));
 
+// =============================================
+// 7. الأنواع (Types)
+// =============================================
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+export type Prompt = typeof prompts.$inferSelect;
+export type NewPrompt = typeof prompts.$inferInsert;
+export type Framework = typeof promptFrameworks.$inferSelect;
+export type NewFramework = typeof promptFrameworks.$inferInsert;
+export type Order = typeof orders.$inferSelect;
+export type NewOrder = typeof orders.$inferInsert;
+export type CreditTransaction = typeof creditTransactions.$inferSelect;
+export type NewCreditTransaction = typeof creditTransactions.$inferInsert;
