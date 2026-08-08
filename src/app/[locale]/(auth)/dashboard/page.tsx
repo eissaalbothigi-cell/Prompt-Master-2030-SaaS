@@ -2,13 +2,10 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { db } from '@/libs/DB';
 import { prompts, users } from '@/models/Schema';
-import { eq, desc, count, sql } from 'drizzle-orm';
+import { count } from 'drizzle-orm';
 import Link from 'next/link';
 import { getI18nPath } from '@/utils/Helpers';
 
-// ============================================================
-// 🔥 1. إعدادات SEO والبيانات الوصفية
-// ============================================================
 type DashboardPageProps = {
   params: Promise<{ locale: string }>;
 };
@@ -34,9 +31,6 @@ export async function generateMetadata(props: DashboardPageProps): Promise<Metad
   };
 }
 
-// ============================================================
-// 📊 2. صفحة لوحة التحكم الرئيسية
-// ============================================================
 export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage(props: DashboardPageProps) {
@@ -46,9 +40,6 @@ export default async function DashboardPage(props: DashboardPageProps) {
   const t = await getTranslations({ locale, namespace: 'Dashboard' });
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
 
-  // ============================================================
-  // 📈 2.1 جلب الإحصائيات من قاعدة البيانات
-  // ============================================================
   try {
     const [totalUsers, totalPrompts] = await Promise.all([
       db.select({ value: count() }).from(users),
@@ -58,15 +49,9 @@ export default async function DashboardPage(props: DashboardPageProps) {
     const userCount = totalUsers[0]?.value ?? 0;
     const promptCount = totalPrompts[0]?.value ?? 0;
 
-    // ============================================================
-    // 🎨 2.2 عرض الواجهة
-    // ============================================================
     return (
       <div dir={dir} className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-6 md:p-8">
         <div className="mx-auto max-w-7xl space-y-8">
-          {/* ============================================================
-              🏷️ 2.2.1 الهوية البصرية (الهيدر)
-              ============================================================ */}
           <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
             <div>
               <h1 className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -85,11 +70,7 @@ export default async function DashboardPage(props: DashboardPageProps) {
             </Link>
           </div>
 
-          {/* ============================================================
-              📊 2.2.2 بطاقات الإحصائيات
-              ============================================================ */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {/* 🔢 بطاقة إجمالي المستخدمين */}
             <div className="group rounded-2xl border border-slate-200/50 bg-white/80 p-6 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-2xl dark:border-slate-800/50 dark:bg-slate-950/80">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">
@@ -105,7 +86,6 @@ export default async function DashboardPage(props: DashboardPageProps) {
               </p>
             </div>
 
-            {/* 🔢 بطاقة إجمالي البرومبتات */}
             <div className="group rounded-2xl border border-slate-200/50 bg-white/80 p-6 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-2xl dark:border-slate-800/50 dark:bg-slate-950/80">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">
@@ -121,11 +101,10 @@ export default async function DashboardPage(props: DashboardPageProps) {
               </p>
             </div>
 
-            {/* 🔢 بطاقة نشاط اليوم (مثال) */}
             <div className="group rounded-2xl border border-slate-200/50 bg-white/80 p-6 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-2xl dark:border-slate-800/50 dark:bg-slate-950/80">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                  {locale === 'ar' ? '⚡ نشاط اليوم' : '⚡ Today\'s Activity'}
+                  {locale === 'ar' ? '⚡ نشاط اليوم' : "⚡ Today's Activity"}
                 </h3>
                 <span className="text-2xl opacity-50">📈</span>
               </div>
@@ -138,9 +117,6 @@ export default async function DashboardPage(props: DashboardPageProps) {
             </div>
           </div>
 
-          {/* ============================================================
-              🚀 2.2.3 روابط سريعة للميزات الرئيسية
-              ============================================================ */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             <Link
               href={getI18nPath('/dashboard/user-profile', locale)}
@@ -194,9 +170,6 @@ export default async function DashboardPage(props: DashboardPageProps) {
       </div>
     );
   } catch (error) {
-    // ============================================================
-    // ❌ 2.3 معالجة الأخطاء (عند فشل جلب البيانات)
-    // ============================================================
     console.error('Dashboard error:', error);
     return (
       <div dir={dir} className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-6 dark:bg-slate-950">
