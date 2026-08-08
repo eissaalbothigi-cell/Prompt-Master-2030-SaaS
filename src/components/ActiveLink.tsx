@@ -6,8 +6,11 @@ import { cn } from '@/utils/Helpers';
 export const ActiveLink = (props: { href: string; children: React.ReactNode }) => {
   const pathname = usePathname();
 
-  // حذف اللغة من المسار للمقارنة (مثلاً /ar/dashboard → /dashboard)
-  const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}/, '') || '/';
+  // إزالة اللغة من المسار (تدعم لغات مكونة من حرفين مثل ar, en)
+  // مثال: /ar/dashboard → /dashboard
+  const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}(?:\/|$)/, '/');
+  
+  // تحديد ما إذا كان الرابط نشطاً (مطابقة تامة للمسار)
   const isActive = pathWithoutLocale === props.href;
 
   return (
