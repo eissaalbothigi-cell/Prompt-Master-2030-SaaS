@@ -19,6 +19,7 @@ jobs:
           cache: 'npm'
 
       - name: Cache dependencies
+        id: cache
         uses: actions/cache@v4
         with:
           path: node_modules
@@ -26,7 +27,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci --prefer-offline --no-audit
+        run: npm ci --prefer-offline --no-audit --legacy-peer-deps
 
       - name: Build
         run: npm run build
