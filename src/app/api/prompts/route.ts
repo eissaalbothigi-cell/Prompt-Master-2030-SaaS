@@ -1,87 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/libs/DB';
 import { prompts } from '@/models/Schema';
+import { eq, and } from 'drizzle-orm';
 import { verifyToken } from '@/libs/Auth';
 import { cookies } from 'next/headers';
+import { handleApiError, UnauthorizedError, NotFoundError } from '@/libs/apiErrorHandler';
 
-// POST: حفظ برومبت جديد
-export async function POST(request: NextRequest) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    // 1. التحقق من المصادقة
+    const { id } = await params;
     const cookieStore = await cookies();
     const token = cookieStore.get('auth_token')?.value;
-    if (!token) {
-      return NextResponse.json({ error: 'غير مصرح' }, { status: 401 });
-    }
+    if (!token) throw new UnauthorizedError();
     const decoded = verifyToken(token);
-    if (!decoded?.userId) {
-      return NextResponse.json({ error: 'رمز غير صالح' }, { status: 401 });
-    }
+    if (!decoded?.userId) throw new UnauthorizedError();
 
-    // 2. قراءة البيانات
-    const body = await request.json();
-    const { title, description, content, status = 'published' } = body;
+    const deleted = await db
+      .delete(prompts)
+      .where(and(eq(prompts.id, id), eq(prompts.authorId, decoded.userId)))
+      .returning({ id: prompts.id });
 
-    if (!title || !content) {
-      return NextResponse.json(
-        { error: 'العنوان والمحتوى مطلوبان' },
-        { status: 400 }
-      );
-    }
+    if (deleted.length === 0) throw new NotFoundError('البرومبت');
 
-    // 3. حفظ في قاعدة البيانات
-    const [newPrompt] = await db
-      .insert(prompts)
-      .values({
-        title,
-        description: description || '',
-        content,
-        status,
-        isPublic: false,
-        authorId: decoded.userId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .returning();
-
-    return NextResponse.json({
-      success: true,
-      message: 'تم حفظ البرومبت بنجاح',
-      promptId: newPrompt?.id,
-    });
+    return NextResponse.json({ success: true, message: 'تم الحذف بنجاح' });
   } catch (error) {
-    console.error('Save prompt error:', error);
-    return NextResponse.json(
-      { error: 'حدث خطأ داخلي' },
-      { status: 500 }
-    );
-  }
-}
-
-// GET: جلب برومبتات المستخدم (اختياري، للتأكد من العمل)
-export async function GET() {
-  try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('auth_token')?.value;
-    if (!token) {
-      return NextResponse.json({ error: 'غير مصرح' }, { status: 401 });
-    }
-    const decoded = verifyToken(token);
-    if (!decoded?.userId) {
-      return NextResponse.json({ error: 'رمز غير صالح' }, { status: 401 });
-    }
-
-    const userPrompts = await db
-      .select()
-      .from(prompts)
-      .where(decoded.userId); // تبسيط: نستخدم where مع authorId
-
-    return NextResponse.json(userPrompts);
-  } catch (error) {
-    console.error('Fetch prompts error:', error);
-    return NextResponse.json(
-      { error: 'حدث خطأ داخلي' },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 }
