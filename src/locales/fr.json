@@ -1,63 +1,63 @@
 {
   "Index": {
-    "meta_title": "SaaS Template - Le template SaaS parfait pour construire et mettre à l'échelle votre entreprise en toute simplicité.",
-    "meta_description": "Un template gratuit et open-source de landing page pour votre entreprise SaaS, construit avec React, TypeScript, Shadcn UI et Tailwind CSS."
+    "meta_title": "Prompt Master 2030 - La plateforme d'ingénierie de prompts de nouvelle génération",
+    "meta_description": "Plateforme complète pour construire, gérer et optimiser les prompts d'IA, avec des outils professionnels et une bibliothèque de modèles avancée."
   },
   "Navbar": {
     "sign_in": "Se connecter",
     "sign_up": "S'inscrire",
     "product": "Produit",
     "pricing": "Tarifs",
-    "docs": "Docs",
+    "docs": "Documentation",
     "blog": "Blog",
     "about": "À propos"
   },
   "LocaleSwitcher": {
-    "button_label": "Changer de langue"
+    "button_label": "Changer la langue"
   },
   "Hero": {
-    "follow_twitter": "Suivez @Ixartz sur Twitter",
-    "title": "Le parfait <important>SaaS template</important> pour construire et mettre à l'échelle votre entreprise en toute simplicité.",
-    "description": "Un template gratuit et open-source de landing page pour votre entreprise SaaS, construit avec React, TypeScript, Shadcn UI et Tailwind CSS.",
-    "primary_button": "Obtenir Next.js SaaS Starter Kit",
-    "secondary_button": "Mettez une étoile sur GitHub"
+    "follow_twitter": "Suivez-nous sur Twitter",
+    "title": "La plateforme <important>d'ingénierie de prompts</important> leader pour 2030",
+    "description": "Créez, optimisez et partagez des prompts d'IA en utilisant les derniers frameworks d'ingénierie. Une plateforme open-source pour développeurs, chercheurs et entreprises.",
+    "primary_button": "Commencer gratuitement",
+    "secondary_button": "Voir sur GitHub"
   },
   "Features": {
     "section_subtitle": "Fonctionnalités",
-    "section_title": "Débloquer le plein potentiel du SaaS Template",
-    "section_description": "Un template gratuit et open-source de landing page pour votre entreprise SaaS, construit avec React, TypeScript, Shadcn UI et Tailwind CSS.",
-    "feature1_title": "Node.js",
-    "feature2_title": "React",
-    "feature3_title": "Tailwind CSS",
-    "feature4_title": "TypeScript",
-    "feature5_title": "Shadcn UI",
-    "feature6_title": "ESLint",
-    "feature_description": "Un template gratuit et open-source de landing page pour votre entreprise SaaS, construit avec React, TypeScript, Shadcn UI et Tailwind CSS."
+    "section_title": "Tout ce dont vous avez besoin pour l'ingénierie de prompts professionnelle",
+    "section_description": "Des outils avancés pour construire des prompts précis, avec support des derniers frameworks comme CO-STAR, RISEN, RTF, et bien plus.",
+    "feature1_title": "9 Frameworks d'ingénierie",
+    "feature2_title": "Générateur intelligent",
+    "feature3_title": "Bibliothèque de modèles",
+    "feature4_title": "Partage et collaboration",
+    "feature5_title": "Analyse et évaluation",
+    "feature6_title": "Interface en français",
+    "feature_description": "Des outils avancés pour améliorer la qualité et la précision de vos prompts."
   },
   "Pricing": {
-    "section_subtitle": "Tarifs",
-    "section_title": "Débloquer le plein potentiel du SaaS Template",
-    "section_description": "Un template gratuit et open-source de landing page pour votre entreprise SaaS, construit avec React, TypeScript, Shadcn UI et Tailwind CSS.",
-    "button_text": "Commencer"
+    "section_subtitle": "Tarifs et plans",
+    "section_title": "Choisissez le plan qui vous convient",
+    "section_description": "Des plans flexibles adaptés aux particuliers, équipes et entreprises, avec des options gratuites et payantes.",
+    "button_text": "Commencer maintenant"
   },
   "PricingPlans": {
     "free_plan_name": "Gratuit",
-    "premium_plan_name": "Premium",
-    "enterprise_plan_name": "Enterprise"
+    "premium_plan_name": "Professionnel",
+    "enterprise_plan_name": "Entreprise"
   },
   "PricingCard": {
-    "free_plan_description": "Pour les particuliers",
-    "premium_plan_description": "Pour les petites équipes",
-    "enterprise_plan_description": "Pour les leaders du secteur",
-    "plan_price": "${price}",
+    "free_plan_description": "Pour les particuliers et débutants",
+    "premium_plan_description": "Pour les équipes et professionnels",
+    "enterprise_plan_description": "Pour les grandes entreprises et organisations",
+    "plan_price": "{price}",
     "plan_interval_month": "/ mois",
     "plan_interval_year": "/ an"
   },
   "PricingFeatures": {
-    "feature_team_member": "Jusqu'à {number} membres",
-    "feature_website": "Jusqu'à {number} sites web",
+    "feature_team_member": "Jusqu'à {number} membres dans l'équipe",
+    "feature_website": "Jusqu'à {number} projets",
     "feature_storage": "{number} Go de stockage",
-    "feature_transfer": "{number} To de transfert",
+    "feature_transfer": "{number} To de transfert de données",
     "feature_email_support": "Support par email"
   },
   "SponsorLogos": {
@@ -67,56 +67,138 @@
     "crowdin_logo": "Logo Crowdin",
     "arcjet_logo": "Logo Arcjet",
     "coderabbit_logo": "Logo CodeRabbit",
-    "nextjs_boilerplate_logo": "Logo Next.js SaaS Boilerplate"
+    "nextjs_boilerplate_logo": "Logo Next.js Boilerplate"
   },
   "FAQ": {
-    "question": "Lorem ipsum dolor sit amet, consectetur adipiscing elit?",
-    "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam aliquam enim dui, id consequat turpis ullamcorper ac. Mauris id quam dolor. Nullam eu egestas turpis. Proin risus elit, sollicitudin in mi a, accumsan euismod turpis. In euismod mi sed diam tristique hendrerit."
+    "question": "Qu'est-ce que la plateforme Prompt Master 2030 ?",
+    "answer": "Une plateforme dédiée à l'ingénierie de prompts, fournissant des outils pour créer et optimiser des prompts d'IA en utilisant les derniers frameworks d'ingénierie, avec une bibliothèque de modèles et des fonctionnalités de collaboration."
   },
   "CTA": {
-    "title": "Vous êtes prêt?",
-    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    "button_text": "Obtenir Next.js SaaS Starter Kit"
+    "title": "Prêt à démarrer ?",
+    "description": "Rejoignez des milliers d'utilisateurs qui développent leurs prompts avec Prompt Master 2030",
+    "button_text": "Commencez votre voyage maintenant"
   },
   "Footer": {
     "product": "Produit",
-    "docs": "Docs",
+    "docs": "Documentation",
     "blog": "Blog",
     "community": "Communauté",
     "company": "Entreprise",
     "terms_of_service": "Conditions d'utilisation",
     "privacy_policy": "Politique de confidentialité",
-    "footer_text": "© {year} {name}. Fait avec <author></author>."
+    "footer_text": "© {year} {name}. Conçu et développé par Issa Al-Bathiji."
   },
   "SignIn": {
-    "meta_title": "Se connecter",
-    "meta_description": "Connectez-vous à votre compte avec facilité."
+    "meta_title": "Connexion - Prompt Master 2030",
+    "meta_description": "Connectez-vous à Prompt Master 2030 pour accéder à vos outils d'ingénierie de prompts."
   },
   "SignUp": {
-    "meta_title": "S'inscrire",
-    "meta_description": "Créez un compte sans effort grâce à notre processus d'inscription intuitif."
+    "meta_title": "Inscription - Prompt Master 2030",
+    "meta_description": "Créez votre compte gratuitement sur Prompt Master 2030 et commencez à construire des prompts professionnels."
   },
   "DashboardLayout": {
-    "meta_title": "Tableau de bord du SaaS Template",
-    "meta_description": "Un template gratuit et open-source de landing page pour votre entreprise SaaS, construit avec Next.js, TypeScript, Shadcn UI et Tailwind CSS.",
+    "meta_title": "Tableau de bord - Prompt Master 2030",
+    "meta_description": "Tableau de bord complet pour gérer vos prompts et projets sur Prompt Master 2030.",
     "home": "Accueil",
     "members": "Membres",
-    "settings": "Réglages"
+    "settings": "Paramètres"
   },
   "DashboardIndexPage": {
     "title_bar": "Tableau de bord",
-    "title_bar_description": "Bienvenue sur votre tableau de bord",
-    "message_state_title": "Commençons",
-    "message_state_description": "Personnalisez cette page en modifiant le fichier dans <code>dashboard/page.tsx</code>.",
-    "message_state_alternative": "Besoin de fonctionnalités avancées ? Next.js 16 & React 19, Multi-tenancy & Équipes, Rôles & Permissions, Shadcn UI,\nTypesafety de bout en bout avec oRPC, Paiement Stripe, Mode clair / sombre. Essayez <url></url>.",
-    "max_message": "Ou, besoin d'une stack d'auth auto-hébergée (Better Auth) ? Essayez <url></url>."
+    "title_bar_description": "Bienvenue sur Prompt Master 2030",
+    "message_state_title": "Commencez maintenant",
+    "message_state_description": "Utilisez le générateur intelligent pour créer des prompts professionnels, ou parcourez la bibliothèque de modèles prêts à l'emploi.",
+    "message_state_alternative": "Besoin de fonctionnalités avancées ? Essayez les frameworks CO-STAR, RISEN, RTF, et bien plus.",
+    "max_message": "Ou utilisez l'API pour développer vos propres applications."
   },
   "UserProfilePage": {
-    "title_bar": "Profil utilisateur",
-    "title_bar_description": "Afficher et gérer votre profil utilisateur"
+    "title_bar": "Profil utilisateur - Prompt Master 2030",
+    "title_bar_description": "Afficher et gérer vos informations personnelles sur Prompt Master 2030",
+    "loading": "Chargement...",
+    "first_name": "Prénom",
+    "last_name": "Nom",
+    "job_title": "Titre du poste",
+    "job_title_placeholder": "Ex: Ingénieur de prompts professionnel",
+    "bio": "À propos de vous",
+    "bio_placeholder": "Rédigez une courte biographie sur votre expérience dans le monde des prompts...",
+    "save": "Enregistrer les modifications",
+    "saving": "Enregistrement...",
+    "success": "✅ Votre profil a été mis à jour avec succès sur Prompt Master 2030",
+    "error": "❌ Une erreur est survenue lors de l'enregistrement, veuillez réessayer",
+    "avatar_alt": "Avatar de l'utilisateur"
   },
   "OrganizationProfilePage": {
-    "title_bar": "Gestion de l’organisation",
-    "title_bar_description": "Gérer votre organisation"
+    "title_bar": "Gestion d'organisation - Prompt Master 2030",
+    "title_bar_description": "Gérer votre organisation et les membres de votre équipe sur Prompt Master 2030"
+  },
+  "GeneratorPage": {
+    "title": "Générateur de prompts intelligent",
+    "subtitle": "Décrivez le prompt que vous souhaitez, et l'IA le générera pour vous",
+    "description_label": "Description du prompt",
+    "description_placeholder": "Exemple: Écrire un prompt pour aider à rédiger un tweet marketing sur l'IA...",
+    "generate": "🚀 Générer le prompt",
+    "generating": "⏳ Génération en cours...",
+    "clear": "Effacer",
+    "result_label": "Prompt généré",
+    "copy": "📋 Copier",
+    "save": "💾 Enregistrer",
+    "saving": "⏳ Enregistrement...",
+    "copy_success": "✅ Prompt copié dans le presse-papiers !",
+    "save_success": "✅ Prompt enregistré dans votre bibliothèque avec succès !",
+    "error_generate": "Une erreur est survenue lors de la génération",
+    "error_save": "Une erreur est survenue lors de l'enregistrement",
+    "empty_error": "Veuillez entrer une description pour le prompt"
+  },
+  "PromptsPage": {
+    "title": "Bibliothèque de prompts",
+    "subtitle": "Tous les prompts que vous avez créés",
+    "new_prompt": "Nouveau prompt",
+    "no_prompts": "Vous n'avez pas encore créé de prompts",
+    "go_generate": "Créez votre premier prompt 🚀",
+    "published": "Publié",
+    "draft": "Brouillon",
+    "archived": "Archivé",
+    "content": "Contenu du prompt",
+    "description": "Description",
+    "views": "vues",
+    "likes": "j'aime",
+    "view": "Voir",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "copy": "Copier",
+    "back": "Retour à la bibliothèque",
+    "edit_prompt": "Modifier le prompt",
+    "edit_subtitle": "Mettre à jour le contenu et les paramètres du prompt",
+    "title_placeholder": "Entrez un titre pour le prompt",
+    "description_placeholder": "Brève description du prompt (optionnel)",
+    "content_placeholder": "Entrez le contenu du prompt ici...",
+    "status": "Statut",
+    "cancel": "Annuler"
+  },
+  "DashboardPage": {
+    "meta_title": "Tableau de bord - Prompt Master 2030",
+    "meta_description": "Aperçu de votre activité et statistiques sur Prompt Master 2030",
+    "title": "Tableau de bord",
+    "welcome": "Bienvenue sur Prompt Master 2030",
+    "title_bar": "Bonjour, {name} 👋",
+    "title_bar_description": "Aperçu de votre activité sur Prompt Master 2030",
+    "guest": "Invité",
+    "total_prompts": "Total des prompts",
+    "total_users": "Total des utilisateurs",
+    "my_prompts": "Mes prompts",
+    "credits": "Crédits restants",
+    "system_status": "État du système",
+    "status": "Statut",
+    "online": "En ligne",
+    "recent_prompts": "Prompts récents",
+    "view_all": "Voir tout",
+    "no_prompts_yet": "Vous n'avez pas encore créé de prompts",
+    "create_first_prompt": "Créez votre premier prompt",
+    "published": "Publié",
+    "draft": "Brouillon",
+    "new_prompt": "Nouveau prompt",
+    "error_title": "Une erreur est survenue",
+    "error_message": "Impossible de charger les données du tableau de bord",
+    "back_home": "Retour à l'accueil"
   }
 }
