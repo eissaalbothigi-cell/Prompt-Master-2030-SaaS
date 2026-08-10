@@ -34,7 +34,9 @@ jobs:
           run_install: false
 
       - name: Generate pnpm-lock.yaml
-        run: pnpm install --lockfile-only
+        run: |
+          pnpm install --no-frozen-lockfile
+          rm -rf node_modules
 
       - name: Check if lockfile changed
         id: check_changes
@@ -56,9 +58,8 @@ jobs:
             تم توليد ملف `pnpm-lock.yaml` تلقائياً عبر GitHub Actions.
             
             - المشروع يستخدم `packageManager: pnpm@9.0.0`
-            - تم تشغيل `pnpm install --lockfile-only`
+            - تم تشغيل `pnpm install --no-frozen-lockfile`
             - يُرجى مراجعة الملف والموافقة على الدمج
           branch: actions/generate-pnpm-lock
           base: ${{ github.event.inputs.branch }}
           delete-branch: true
-          
