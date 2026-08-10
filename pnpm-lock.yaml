@@ -1,0 +1,130 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+  .:
+    dependencies:
+      '@paralleldrive/cuid2':
+        specifier: ^2.2.2
+        version: 2.2.2
+      '@t3-oss/env-nextjs':
+        specifier: ^0.12.0
+        version: 0.12.0
+      bcryptjs:
+        specifier: ^2.4.3
+        version: 2.4.3
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      cookie:
+        specifier: ^0.7.2
+        version: 0.7.2
+      drizzle-orm:
+        specifier: ^0.39.1
+        version: 0.39.1
+      jsonwebtoken:
+        specifier: ^9.0.2
+        version: 9.0.2
+      lucide-react:
+        specifier: ^0.474.0
+        version: 0.474.0
+      next:
+        specifier: 15.1.4
+        version: 15.1.4
+      next-intl:
+        specifier: ^4.0.2
+        version: 4.0.2
+      pg:
+        specifier: ^8.13.1
+        version: 8.13.1
+      react:
+        specifier: ^19.0.0
+        version: 19.0.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.0.0
+      sonner:
+        specifier: ^2.0.7
+        version: 2.0.7
+      tailwind-merge:
+        specifier: ^2.5.4
+        version: 2.5.4
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.1
+    devDependencies:
+      '@commitlint/cli':
+        specifier: ^19.6.1
+        version: 19.6.1
+      '@commitlint/config-conventional':
+        specifier: ^19.6.0
+        version: 19.6.0
+      '@eslint/eslintrc':
+        specifier: ^3.2.0
+        version: 3.2.0
+      '@testing-library/jest-dom':
+        specifier: ^6.6.3
+        version: 6.6.3
+      '@testing-library/react':
+        specifier: ^16.1.0
+        version: 16.1.0
+      '@types/bcryptjs':
+        specifier: ^2.4.6
+        version: 2.4.6
+      '@types/jsonwebtoken':
+        specifier: ^9.0.7
+        version: 9.0.7
+      '@types/node':
+        specifier: ^22.13.0
+        version: 22.13.0
+      '@types/react':
+        specifier: ^19.0.2
+        version: 19.0.2
+      '@types/react-dom':
+        specifier: ^19.0.2
+        version: 19.0.2
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.3.4
+      '@vitest/coverage-v8':
+        specifier: ^4.1.10
+        version: 4.1.10
+      '@vitest/ui':
+        specifier: ^4.1.10
+        version: 4.1.10
+      drizzle-kit:
+        specifier: ^0.30.0
+        version: 0.30.0
+      eslint:
+        specifier: ^8.57.1
+        version: 8.57.1
+      eslint-config-next:
+        specifier: 15.1.4
+        version: 15.1.4
+      husky:
+        specifier: ^9.1.7
+        version: 9.1.7
+      lint-staged:
+        specifier: ^15.2.10
+        version: 15.2.10
+      playwright:
+        specifier: ^1.49.1
+        version: 1.49.1
+      postcss:
+        specifier: ^8.4.49
+        version: 8.4.49
+      tailwindcss:
+        specifier: ^3.4.17
+        version: 3.4.17
+      typescript:
+        specifier: ^5.7.2
+        version: 5.7.2
+      vitest:
+        specifier: ^4.1.10
+        version: 4.1.10
