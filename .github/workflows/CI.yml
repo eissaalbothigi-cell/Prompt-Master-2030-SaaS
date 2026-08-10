@@ -16,7 +16,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        # لم نحدد version هنا، سيقرأ الإصدار تلقائياً من packageManager في package.json
+        with:
+          version: 9
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
