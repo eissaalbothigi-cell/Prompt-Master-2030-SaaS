@@ -43,7 +43,6 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@chromatic-com/playwright": "^1.0.0",
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
     "@eslint/eslintrc": "^3.2.0",
