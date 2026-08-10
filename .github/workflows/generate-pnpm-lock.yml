@@ -41,10 +41,10 @@ jobs:
       - name: Check if lockfile changed
         id: check_changes
         run: |
-          if git diff --quiet HEAD -- pnpm-lock.yaml; then
-            echo "changed=false" >> $GITHUB_OUTPUT
-          else
+          if [ -f pnpm-lock.yaml ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Create Pull Request with lockfile
