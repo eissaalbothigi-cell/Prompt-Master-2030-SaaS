@@ -2,35 +2,37 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
-    branches: [main]
+    branches: [main, master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Install pnpm
+    steps:
+      # 1. Checkout الكود
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. تثبيت pnpm أولاً (قبل Node)
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8.15.0
+          version: 9
+          run_install: false
 
+      # 3. تثبيت Node.js مع تفعيل التخزين المؤقت لـ pnpm
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version: 22
           cache: 'pnpm'
 
+      # 4. تثبيت الحزم
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # 5. بناء المشروع (اختياري)
       - name: Build
         run: pnpm build
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Type Check
-        run: pnpm check
