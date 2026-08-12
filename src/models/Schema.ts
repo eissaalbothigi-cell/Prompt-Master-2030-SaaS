@@ -14,7 +14,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
-// ─── Enums (أنواع محددة) ───
+// ─── Enums ───
 export const userRoleEnum = pgEnum("user_role", ["admin", "user", "moderator"]);
 export const orgRoleEnum = pgEnum("org_role", ["owner", "admin", "member"]);
 export const orgPlanEnum = pgEnum("org_plan", ["free", "starter", "pro", "enterprise"]);
@@ -30,7 +30,7 @@ export const auditActionEnum = pgEnum("audit_action", [
   "export", "import", "payment", "api_call"
 ]);
 
-// ─── 1. users (المستخدمين) ───
+// ─── 1. users ───
 export const users = pgTable(
   "users",
   {
@@ -53,7 +53,7 @@ export const users = pgTable(
   ]
 );
 
-// ─── 2. sessions (الجلسات) ───
+// ─── 2. sessions ───
 export const sessions = pgTable(
   "sessions",
   {
@@ -74,7 +74,7 @@ export const sessions = pgTable(
   ]
 );
 
-// ─── 3. organizations (المنظمات) ───
+// ─── 3. organizations ───
 export const organizations = pgTable(
   "organizations",
   {
@@ -100,7 +100,7 @@ export const organizations = pgTable(
   ]
 );
 
-// ─── 4. organizationMembers (أعضاء المنظمة) ───
+// ─── 4. organizationMembers ───
 export const organizationMembers = pgTable(
   "organization_members",
   {
@@ -121,7 +121,7 @@ export const organizationMembers = pgTable(
   ]
 );
 
-// ─── 5. projects (المشاريع) ───
+// ─── 5. projects ───
 export const projects = pgTable(
   "projects",
   {
@@ -146,7 +146,7 @@ export const projects = pgTable(
   ]
 );
 
-// ─── 6. promptFrameworks (إطارات الـ Prompt) ───
+// ─── 6. promptFrameworks ───
 export const promptFrameworks = pgTable(
   "prompt_frameworks",
   {
@@ -169,7 +169,7 @@ export const promptFrameworks = pgTable(
   ]
 );
 
-// ─── 7. prompts (الـ Prompts) ───
+// ─── 7. prompts ───
 export const prompts = pgTable(
   "prompts",
   {
@@ -208,7 +208,7 @@ export const prompts = pgTable(
   ]
 );
 
-// ─── 8. orders (الطلبات) ───
+// ─── 8. orders ───
 export const orders = pgTable(
   "orders",
   {
@@ -236,7 +236,7 @@ export const orders = pgTable(
   ]
 );
 
-// ─── 9. payments (المدفوعات) ───
+// ─── 9. payments ───
 export const payments = pgTable(
   "payments",
   {
@@ -261,7 +261,7 @@ export const payments = pgTable(
   ]
 );
 
-// ─── 10. subscriptions (الاشتراكات) ───
+// ─── 10. subscriptions ───
 export const subscriptions = pgTable(
   "subscriptions",
   {
@@ -286,7 +286,7 @@ export const subscriptions = pgTable(
   ]
 );
 
-// ─── 11. apiKeys (مفاتيح API) ───
+// ─── 11. apiKeys ───
 export const apiKeys = pgTable(
   "api_keys",
   {
@@ -314,7 +314,7 @@ export const apiKeys = pgTable(
   ]
 );
 
-// ─── 12. rateLimits (حدود الاستخدام) ───
+// ─── 12. rateLimits ───
 export const rateLimits = pgTable(
   "rate_limits",
   {
@@ -334,7 +334,7 @@ export const rateLimits = pgTable(
   ]
 );
 
-// ─── 13. auditLogs (سجلات التدقيق) ───
+// ─── 13. auditLogs ───
 export const auditLogs = pgTable(
   "audit_logs",
   {
@@ -363,7 +363,7 @@ export const auditLogs = pgTable(
   ]
 );
 
-// ─── 14. creditTransactions (معاملات الرصيد) ───
+// ─── 14. creditTransactions ───
 export const creditTransactions = pgTable(
   "credit_transactions",
   {
@@ -391,7 +391,7 @@ export const creditTransactions = pgTable(
 );
 
 // ═══════════════════════════════════════════
-// العلاقات بين الجداول (Relations)
+// Relations
 // ═══════════════════════════════════════════
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -506,7 +506,7 @@ export const creditTransactionsRelations = relations(creditTransactions, ({ one 
 }));
 
 // ═══════════════════════════════════════════
-// الأنواع الجاهزة (Types)
+// Types
 // ═══════════════════════════════════════════
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
