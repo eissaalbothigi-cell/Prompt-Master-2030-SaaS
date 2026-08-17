@@ -22,5 +22,12 @@
     "tailwindcss": "latest",
     "postcss": "latest",
     "autoprefixer": "latest"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:migrate": "drizzle-kit migrate"
   }
 }
