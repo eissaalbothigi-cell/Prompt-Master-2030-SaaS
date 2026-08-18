@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
-import { db } from "@/lib/db";
-import { users } from "@/models/schema";
+import { db } from "@/libs/DB";
+import { users } from "@/models/Schema";
 import { eq } from "drizzle-orm";
-import { createSessionResponse } from "@/lib/session";
-import { rateLimit } from "@/lib/rate-limit";
-import { auditUserRegistered, auditLog } from "@/lib/audit";
+import { createSessionResponse } from "@/libs/session";
+import { rateLimit } from "@/libs/rate-limit";
+import { auditUserRegistered, auditLog } from "@/libs/audit";
 
 // ----------------------------------------------
 // 1. التحقق من صحة المدخلات (Zod Schema) - مستوى عالٍ من الدقة
