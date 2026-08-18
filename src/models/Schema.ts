@@ -1,8 +1,7 @@
 import {
   pgTable,
-  serial,
-  varchar,
   text,
+  varchar,
   integer,
   boolean,
   timestamp,
@@ -13,6 +12,13 @@ import {
   decimal,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import { createId } from "@paralleldrive/cuid2";
+
+// ─── دالة مساعدة للـ timestamps ───
+const timestamps = () => ({
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
 
 // ─── Enums ───
 export const userRoleEnum = pgEnum("user_role", ["admin", "user", "moderator"]);
@@ -26,7 +32,7 @@ export const paymentStatusEnum = pgEnum("payment_status", ["pending", "success",
 export const subscriptionStatusEnum = pgEnum("subscription_status", ["active", "cancelled", "expired", "trialing"]);
 export const creditTypeEnum = pgEnum("credit_type", ["purchase", "usage", "refund", "bonus"]);
 export const auditActionEnum = pgEnum("audit_action", [
-  "create", "update", "delete", "login", "logout", 
+  "create", "update", "delete", "login", "logout",
   "export", "import", "payment", "api_call"
 ]);
 
@@ -34,16 +40,17 @@ export const auditActionEnum = pgEnum("audit_action", [
 export const users = pgTable(
   "users",
   {
-    id: serial("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => createId()),
     email: varchar("email", { length: 255 }).notNull().unique(),
     name: varchar("name", { length: 255 }),
+    password: text("password").notNull(), // ✅ تم الإضافة
+    credits: integer("credits").default(0).notNull(), // ✅ تم الإضافة
     avatar: text("avatar"),
     role: userRoleEnum("role").default("user").notNull(),
     isActive: boolean("is_active").default(true).notNull(),
     emailVerified: boolean("email_verified").default(false).notNull(),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    ...timestamps(),
   },
   (table) => [
     index("users_email_idx").on(table.email),
@@ -57,15 +64,15 @@ export const users = pgTable(
 export const sessions = pgTable(
   "sessions",
   {
-    id: serial("id").primaryKey(),
-    userId: integer("user_id")
+    id: text("id").primaryKey().$defaultFn(() => createId()),
+    userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    token: varchar("token", { length: 512 }).notNull().unique(),
+    token: text("token").notNull().unique(),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     ipAddress: varchar("ip_address", { length: 45 }),
     userAgent: text("user_agent"),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    ...timestamps(),
   },
   (table) => [
     index("sessions_user_id_idx").on(table.userId),
@@ -78,19 +85,18 @@ export const sessions = pgTable(
 export const organizations = pgTable(
   "organizations",
   {
-    id: serial("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => createId()),
     name: varchar("name", { length: 255 }).notNull(),
-    slug: varchar("slug", { length: 255 }).notNull().unique(),
+    slug: text("slug").notNull().unique(),
     description: text("description"),
     logo: text("logo"),
-    ownerId: integer("owner_id")
+    ownerId: text("owner_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     plan: orgPlanEnum("plan").default("free").notNull(),
     status: orgStatusEnum("status").default("active").notNull(),
     settings: jsonb("settings").default({}),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    ...timestamps(),
   },
   (table) => [
     index("organizations_slug_idx").on(table.slug),
@@ -104,11 +110,11 @@ export const organizations = pgTable(
 export const organizationMembers = pgTable(
   "organization_members",
   {
-    id: serial("id").primaryKey(),
-    orgId: integer("org_id")
+    id: text("id").primaryKey().$defaultFn(() => createId()),
+    orgId: text("org_id")
       .notNull()
       .references(() => organizations.id, { onDelete: "cascade" }),
-    userId: integer("user_id")
+    userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     role: orgRoleEnum("role").default("member").notNull(),
@@ -125,19 +131,18 @@ export const organizationMembers = pgTable(
 export const projects = pgTable(
   "projects",
   {
-    id: serial("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => createId()),
     name: varchar("name", { length: 255 }).notNull(),
     description: text("description"),
-    orgId: integer("org_id")
+    orgId: text("org_id")
       .notNull()
       .references(() => organizations.id, { onDelete: "cascade" }),
-    ownerId: integer("owner_id")
+    ownerId: text("owner_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     status: projectStatusEnum("status").default("active").notNull(),
     settings: jsonb("settings").default({}),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    ...timestamps(),
   },
   (table) => [
     index("projects_org_id_idx").on(table.orgId),
@@ -150,17 +155,16 @@ export const projects = pgTable(
 export const promptFrameworks = pgTable(
   "prompt_frameworks",
   {
-    id: serial("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => createId()),
     name: varchar("name", { length: 255 }).notNull(),
-    slug: varchar("slug", { length: 255 }).notNull().unique(),
+    slug: text("slug").notNull().unique(),
     description: text("description"),
     icon: varchar("icon", { length: 100 }),
     category: varchar("category", { length: 100 }),
     template: text("template"),
     isActive: boolean("is_active").default(true).notNull(),
     sortOrder: integer("sort_order").default(0),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    ...timestamps(),
   },
   (table) => [
     index("frameworks_slug_idx").on(table.slug),
@@ -173,19 +177,19 @@ export const promptFrameworks = pgTable(
 export const prompts = pgTable(
   "prompts",
   {
-    id: serial("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => createId()),
     title: varchar("title", { length: 500 }).notNull(),
     content: text("content").notNull(),
-    frameworkId: integer("framework_id").references(() => promptFrameworks.id, {
+    frameworkId: text("framework_id").references(() => promptFrameworks.id, {
       onDelete: "set null",
     }),
-    userId: integer("user_id")
+    userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    orgId: integer("org_id").references(() => organizations.id, {
+    orgId: text("org_id").references(() => organizations.id, {
       onDelete: "cascade",
     }),
-    projectId: integer("project_id").references(() => projects.id, {
+    projectId: text("project_id").references(() => projects.id, {
       onDelete: "set null",
     }),
     isPublic: boolean("is_public").default(false).notNull(),
@@ -193,8 +197,7 @@ export const prompts = pgTable(
     tags: jsonb("tags").default([]),
     metadata: jsonb("metadata").default({}),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    ...timestamps(),
   },
   (table) => [
     index("prompts_user_id_idx").on(table.userId),
@@ -212,11 +215,11 @@ export const prompts = pgTable(
 export const orders = pgTable(
   "orders",
   {
-    id: serial("id").primaryKey(),
-    userId: integer("user_id")
+    id: text("id").primaryKey().$defaultFn(() => createId()),
+    userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    orgId: integer("org_id").references(() => organizations.id, {
+    orgId: text("org_id").references(() => organizations.id, {
       onDelete: "cascade",
     }),
     amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
@@ -225,8 +228,7 @@ export const orders = pgTable(
     paymentMethod: varchar("payment_method", { length: 50 }),
     description: text("description"),
     metadata: jsonb("metadata").default({}),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    ...timestamps(),
   },
   (table) => [
     index("orders_user_id_idx").on(table.userId),
@@ -240,18 +242,18 @@ export const orders = pgTable(
 export const payments = pgTable(
   "payments",
   {
-    id: serial("id").primaryKey(),
-    orderId: integer("order_id")
+    id: text("id").primaryKey().$defaultFn(() => createId()),
+    orderId: text("order_id")
       .notNull()
       .references(() => orders.id, { onDelete: "cascade" }),
     amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
     currency: varchar("currency", { length: 3 }).default("USD").notNull(),
     provider: varchar("provider", { length: 100 }).notNull(),
-    providerPaymentId: varchar("provider_payment_id", { length: 255 }),
+    providerPaymentId: text("provider_payment_id"),
     status: paymentStatusEnum("status").default("pending").notNull(),
     receiptUrl: text("receipt_url"),
     metadata: jsonb("metadata").default({}),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    ...timestamps(),
   },
   (table) => [
     index("payments_order_id_idx").on(table.orderId),
@@ -265,8 +267,8 @@ export const payments = pgTable(
 export const subscriptions = pgTable(
   "subscriptions",
   {
-    id: serial("id").primaryKey(),
-    orgId: integer("org_id")
+    id: text("id").primaryKey().$defaultFn(() => createId()),
+    orgId: text("org_id")
       .notNull()
       .references(() => organizations.id, { onDelete: "cascade" }),
     plan: orgPlanEnum("plan").default("free").notNull(),
@@ -276,8 +278,7 @@ export const subscriptions = pgTable(
     cancelAt: timestamp("cancel_at", { withTimezone: true }),
     autoRenew: boolean("auto_renew").default(true).notNull(),
     metadata: jsonb("metadata").default({}),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    ...timestamps(),
   },
   (table) => [
     index("subscriptions_org_id_idx").on(table.orgId),
@@ -290,21 +291,21 @@ export const subscriptions = pgTable(
 export const apiKeys = pgTable(
   "api_keys",
   {
-    id: serial("id").primaryKey(),
+    id: text("id").primaryKey().$defaultFn(() => createId()),
     name: varchar("name", { length: 255 }).notNull(),
-    keyHash: varchar("key_hash", { length: 512 }).notNull().unique(),
+    keyHash: text("key_hash").notNull().unique(),
     keyPrefix: varchar("key_prefix", { length: 20 }),
-    orgId: integer("org_id")
+    orgId: text("org_id")
       .notNull()
       .references(() => organizations.id, { onDelete: "cascade" }),
-    userId: integer("user_id")
+    userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     permissions: jsonb("permissions").default([]),
     lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
     expiresAt: timestamp("expires_at", { withTimezone: true }),
     isActive: boolean("is_active").default(true).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    ...timestamps(),
   },
   (table) => [
     index("api_keys_org_id_idx").on(table.orgId),
@@ -318,14 +319,14 @@ export const apiKeys = pgTable(
 export const rateLimits = pgTable(
   "rate_limits",
   {
-    id: serial("id").primaryKey(),
-    apiKeyId: integer("api_key_id")
+    id: text("id").primaryKey().$defaultFn(() => createId()),
+    apiKeyId: text("api_key_id")
       .notNull()
       .references(() => apiKeys.id, { onDelete: "cascade" }),
     endpoint: varchar("endpoint", { length: 500 }).notNull(),
     requestsCount: integer("requests_count").default(1).notNull(),
     windowStart: timestamp("window_start", { withTimezone: true }).defaultNow().notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    ...timestamps(),
   },
   (table) => [
     index("rate_limits_api_key_id_idx").on(table.apiKeyId),
@@ -338,21 +339,21 @@ export const rateLimits = pgTable(
 export const auditLogs = pgTable(
   "audit_logs",
   {
-    id: serial("id").primaryKey(),
-    userId: integer("user_id").references(() => users.id, {
+    id: text("id").primaryKey().$defaultFn(() => createId()),
+    userId: text("user_id").references(() => users.id, {
       onDelete: "set null",
     }),
-    orgId: integer("org_id").references(() => organizations.id, {
+    orgId: text("org_id").references(() => organizations.id, {
       onDelete: "cascade",
     }),
     action: auditActionEnum("action").notNull(),
     entityType: varchar("entity_type", { length: 100 }),
-    entityId: varchar("entity_id", { length: 255 }),
+    entityId: text("entity_id"),
     description: text("description"),
     metadata: jsonb("metadata").default({}),
     ipAddress: varchar("ip_address", { length: 45 }),
     userAgent: text("user_agent"),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    ...timestamps(),
   },
   (table) => [
     index("audit_logs_user_id_idx").on(table.userId),
@@ -367,20 +368,20 @@ export const auditLogs = pgTable(
 export const creditTransactions = pgTable(
   "credit_transactions",
   {
-    id: serial("id").primaryKey(),
-    userId: integer("user_id")
+    id: text("id").primaryKey().$defaultFn(() => createId()),
+    userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    orgId: integer("org_id").references(() => organizations.id, {
+    orgId: text("org_id").references(() => organizations.id, {
       onDelete: "cascade",
     }),
     amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
     type: creditTypeEnum("type").notNull(),
     description: text("description"),
     balanceAfter: decimal("balance_after", { precision: 10, scale: 2 }),
-    referenceId: varchar("reference_id", { length: 255 }),
+    referenceId: text("reference_id"),
     metadata: jsonb("metadata").default({}),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    ...timestamps(),
   },
   (table) => [
     index("credit_tx_user_id_idx").on(table.userId),
