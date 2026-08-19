@@ -17,8 +17,8 @@ jobs:
           fetch-depth: 1
 
       - name: الخطوة الحتمية 2 - إعداد بيئة pnpm
-        # التعديل الوحيد الحتمي بناءً على الخطأ الموثق:
-        uses: pnpm/action-setup@v4.1.0
+        # ✅ التصحيح الجذري النهائي: الإصدار v4.1.1 هو الوحيد الذي يزيل خطأ الـ BOM في JSON
+        uses: pnpm/action-setup@v4.1.1
         with:
           version: 9.15.0
           run_install: false
