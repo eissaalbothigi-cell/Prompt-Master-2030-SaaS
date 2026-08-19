@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { csrfProtection, setCsrfCookie } from "@/lib/csrf";
-import { verifyTokenAsync } from "@/lib/auth";
+import { csrfProtection, setCsrfCookie } from "@/libs/csrf";
+import { verifyTokenAsync } from "@/libs/auth";
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
