@@ -24,18 +24,18 @@ jobs:
       - name: الخطوة الحتمية 3 - تثبيت pnpm
         run: npm install -g pnpm@9.15.0
 
-      - name: الخطوة الحتمية 4 - تثبيت الاعتماديات
-        run: |
-          if [ -f pnpm-lock.yaml ]; then
-            echo "🔒 القفل موجود، تثبيت آمن..."
-            pnpm install --frozen-lockfile
-          else
-            echo "⚠️ القفل مفقود، توليد قفل جديد..."
-            pnpm install
-          fi
+      - name: الخطوة الحتمية 4 - تخزين مؤقت لـ pnpm
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
 
-      - name: الخطوة الحتمية 5 - الفحص الداخلي والبناء
+      - name: الخطوة الحتمية 5 - تثبيت الاعتماديات
+        run: pnpm install --frozen-lockfile
+
+      - name: الخطوة الحتمية 6 - الفحص الداخلي والبناء
         run: |
           echo "Running validation protocol..."
           pnpm lint && pnpm build:ci
-
