@@ -1,27 +1,62 @@
 import { expect, test } from '@playwright/test';
 
-test.describe('I18n', () => {
-  test.describe('Language Switching', () => {
-    test('should switch language from English to French using dropdown and verify text on the homepage', async ({ page }) => {
-      await page.goto('/');
+test.describe('I18n - Language Switching', () => {
+  test('should switch language from Arabic to English using dropdown on the homepage', async ({ page }) => {
+    await page.goto('/');
 
-      await expect(page.getByText('The perfect SaaS template to build')).toBeVisible();
+    // التحقق من اللغة الافتراضية (العربية)
+    await expect(page.getByText('Prompt Master 2030')).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
 
-      await page.getByRole('button', { name: 'Change language' }).click();
-      await page.getByText('Français').click();
+    // تبديل اللغة إلى الإنجليزية
+    await page.getByRole('button', { name: /تبديل اللغة|Switch language/i }).click();
+    await page.getByText('English').click();
 
-      await expect(page.getByText('Le parfait SaaS template pour construire')).toBeVisible();
-    });
+    // التحقق من تغيير اللغة
+    await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
+    await expect(page).toHaveURL(/\/en/);
+  });
 
-    test('should switch language from English to French using URL and verify text on the sign-in page', async ({ page }) => {
-      await page.goto('/sign-in');
+  test('should switch language from English to Arabic using URL on the login page', async ({ page }) => {
+    // الذهاب إلى صفحة تسجيل الدخول بالإنجليزية
+    await page.goto('/en/login');
+    await expect(page.getByText('Sign In')).toBeVisible();
+    await expect(page.getByText('Email')).toBeVisible();
 
-      await expect(page.getByText('Email address')).toBeVisible();
+    // التبديل إلى العربية عبر URL
+    await page.goto('/ar/login');
+    await expect(page.getByText('تسجيل الدخول')).toBeVisible();
+    await expect(page.getByText('البريد الإلكتروني')).toBeVisible();
+  });
 
-      await page.goto('/fr/sign-in');
+  test('should display correct translations on the register page', async ({ page }) => {
+    // صفحة التسجيل بالعربية
+    await page.goto('/ar/register');
+    await expect(page.getByText('إنشاء حساب')).toBeVisible();
+    await expect(page.getByText('الاسم')).toBeVisible();
+    await expect(page.getByText('البريد الإلكتروني')).toBeVisible();
+    await expect(page.getByText('كلمة المرور')).toBeVisible();
 
-      await expect(page.getByText('Adresse e-mail')).toBeVisible();
-    });
+    // صفحة التسجيل بالإنجليزية
+    await page.goto('/en/register');
+    await expect(page.getByText('Create Account')).toBeVisible();
+    await expect(page.getByText('Name')).toBeVisible();
+    await expect(page.getByText('Email')).toBeVisible();
+    await expect(page.getByText('Password')).toBeVisible();
+  });
+
+  test('should persist language preference after navigation', async ({ page }) => {
+    // بدء بالعربية
+    await page.goto('/ar');
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+
+    // التنقل إلى صفحة تسجيل الدخول
+    await page.goto('/ar/login');
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+    await expect(page.getByText('تسجيل الدخول')).toBeVisible();
+
+    // التنقل إلى لوحة التحكم (محاكاة تسجيل الدخول)
+    await page.goto('/ar/dashboard');
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   });
 });
-
