@@ -21,16 +21,16 @@ jobs:
         with:
           node-version: '22.10.0'
 
-      - name: الخطوة الحتمية 3 - تثبيت pnpm (حل جذري يلغي الأخطاء الخارجية)
+      - name: الخطوة الحتمية 3 - تثبيت pnpm
         run: npm install -g pnpm@9.15.0
 
       - name: الخطوة الحتمية 4 - تثبيت الاعتماديات
         run: |
           if [ -f pnpm-lock.yaml ]; then
-            echo "✅ pnpm-lock.yaml موجود، تثبيت بحماية القفل..."
+            echo "🔒 القفل موجود، تثبيت آمن..."
             pnpm install --frozen-lockfile
           else
-            echo "⚠️ pnpm-lock.yaml غير موجود، توليد قفل جديد..."
+            echo "⚠️ القفل مفقود، توليد قفل جديد..."
             pnpm install
           fi
 
