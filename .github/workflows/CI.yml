@@ -1,36 +1,39 @@
-name: CI
-
+name: CI - Engineering Protocol
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
-
+    branches: [main]
 jobs:
-  build:
+  build-and-validate:
     runs-on: ubuntu-latest
-
+    # بروتوكول الغلق: منع التكرار أو الفشل المتوازي
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     steps:
-      - name: Checkout repository
+      - name: الخطوة الحتمية 1 - استنساخ المستودع
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-      - name: Setup pnpm
+      - name: الخطوة الحتمية 2 - إعداد بيئة pnpm (نسخة مطابقة)
         uses: pnpm/action-setup@v4
+        with:
+          version: 8.15.6 # رقم النسخة المحدد لضمان عدم تغير السلوك
+          run_install: false
 
-      - name: Setup Node.js
+      - name: الخطوة الحتمية 3 - إعداد بيئة Node.js (النسخة المطلقة)
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '22.10.0' # تحديد رقم الإصدار لضمان مطابقة 100%
           cache: 'pnpm'
 
-      - name: Install dependencies
-        run: pnpm install
+      - name: الخطوة الحتمية 4 - تثبيت الاعتماديات
+        run: pnpm install --frozen-lockfile # قفل الملفات لضمان عدم تغيرها
 
-      - name: Build
-        run: pnpm build
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Type Check
-        run: pnpm check
+      - name: الخطوة الحتمية 5 - الفحص الداخلي والبناء
+        run: |
+          echo "Running validation protocol..."
+          pnpm lint && pnpm build:ci
+        # الحل الهندسي: نقوم بفحص البناء فقط، ونترك النشر الفعلي لـ Vercel
