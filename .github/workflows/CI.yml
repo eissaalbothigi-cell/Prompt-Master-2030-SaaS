@@ -16,18 +16,13 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: الخطوة الحتمية 2 - إعداد بيئة pnpm
-        # ✅ التصحيح الجذري النهائي: الإصدار v4.1.1 هو الوحيد الذي يزيل خطأ الـ BOM في JSON
-        uses: pnpm/action-setup@v4.1.1
-        with:
-          version: 9.15.0
-          run_install: false
-
-      - name: الخطوة الحتمية 3 - إعداد بيئة Node.js
+      - name: الخطوة الحتمية 2 - إعداد بيئة Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22.10.0'
-          cache: 'pnpm'
+
+      - name: الخطوة الحتمية 3 - تثبيت pnpm (حل جذري يلغي الأخطاء الخارجية)
+        run: npm install -g pnpm@9.15.0
 
       - name: الخطوة الحتمية 4 - تثبيت الاعتماديات
         run: pnpm install --frozen-lockfile
