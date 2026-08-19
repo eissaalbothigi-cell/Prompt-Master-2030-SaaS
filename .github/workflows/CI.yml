@@ -38,3 +38,4 @@ jobs:
         run: |
           echo "Running validation protocol..."
           pnpm lint && pnpm build:ci
+
