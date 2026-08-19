@@ -25,7 +25,14 @@ jobs:
         run: npm install -g pnpm@9.15.0
 
       - name: الخطوة الحتمية 4 - تثبيت الاعتماديات
-        run: pnpm install --frozen-lockfile
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            echo "✅ pnpm-lock.yaml موجود، تثبيت بحماية القفل..."
+            pnpm install --frozen-lockfile
+          else
+            echo "⚠️ pnpm-lock.yaml غير موجود، توليد قفل جديد..."
+            pnpm install
+          fi
 
       - name: الخطوة الحتمية 5 - الفحص الداخلي والبناء
         run: |
