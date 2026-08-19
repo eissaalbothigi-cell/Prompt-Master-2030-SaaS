@@ -7,7 +7,6 @@ on:
 jobs:
   build-and-validate:
     runs-on: ubuntu-latest
-    # بروتوكول الغلق: منع التكرار أو الفشل المتوازي
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -17,23 +16,22 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: الخطوة الحتمية 2 - إعداد بيئة pnpm (نسخة مطابقة)
+      - name: الخطوة الحتمية 2 - إعداد بيئة pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8.15.6 # رقم النسخة المحدد لضمان عدم تغير السلوك
+          version: 9.15.0 # التصحيح الجذري: مطابق لـ packageManager في package.json
           run_install: false
 
-      - name: الخطوة الحتمية 3 - إعداد بيئة Node.js (النسخة المطلقة)
+      - name: الخطوة الحتمية 3 - إعداد بيئة Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.10.0' # تحديد رقم الإصدار لضمان مطابقة 100%
+          node-version: '22.10.0'
           cache: 'pnpm'
 
       - name: الخطوة الحتمية 4 - تثبيت الاعتماديات
-        run: pnpm install --frozen-lockfile # قفل الملفات لضمان عدم تغيرها
+        run: pnpm install --frozen-lockfile
 
       - name: الخطوة الحتمية 5 - الفحص الداخلي والبناء
         run: |
           echo "Running validation protocol..."
           pnpm lint && pnpm build:ci
-        # الحل الهندسي: نقوم بفحص البناء فقط، ونترك النشر الفعلي لـ Vercel
