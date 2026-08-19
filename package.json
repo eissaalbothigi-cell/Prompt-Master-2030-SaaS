@@ -1,40 +1,45 @@
-name: CI - Engineering Protocol
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-jobs:
-  build-and-validate:
-    runs-on: ubuntu-latest
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
-    steps:
-      - name: الخطوة الحتمية 1 - استنساخ المستودع
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - name: الخطوة الحتمية 2 - إعداد بيئة Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.10.0'
-
-      - name: الخطوة الحتمية 3 - تثبيت pnpm
-        run: npm install -g pnpm@9.15.0
-
-      - name: الخطوة الحتمية 4 - تثبيت الاعتماديات
-        run: |
-          if [ -f pnpm-lock.yaml ]; then
-            echo "🔒 القفل موجود، تثبيت آمن..."
-            pnpm install --frozen-lockfile
-          else
-            echo "⚠️ القفل مفقود، توليد قفل جديد..."
-            pnpm install
-          fi
-
-      - name: الخطوة الحتمية 5 - الفحص الداخلي والبناء
-        run: |
-          echo "Running validation protocol..."
-          pnpm lint && pnpm build:ci
+{
+  "name": "prompt-master-2030-saas",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbo",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4",
+    "@paralleldrive/cuid2": "^2.2.2",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.34.3",
+    "bcryptjs": "^3.0.2",
+    "drizzle-orm": "^0.38.3",
+    "jose": "^5.9.6",
+    "next": "15.1.4",
+    "next-intl": "^4.1.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "stripe": "^17.7.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/node": "^22.10.5",
+    "@types/react": "19.0.2",
+    "@types/react-dom": "19.0.2",
+    "autoprefixer": "^10.4.20",
+    "drizzle-kit": "^0.30.1",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
