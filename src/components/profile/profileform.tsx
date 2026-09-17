@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
 
-export function ProfileForm() {
+export default function ProfileForm() {
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -13,7 +14,6 @@ export function ProfileForm() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  // جلب البيانات عند فتح الصفحة
   useEffect(() => {
     const fetchUser = async () => {
       const res = await fetch('/api/user/profile');
@@ -31,11 +31,13 @@ export function ProfileForm() {
     fetchUser();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
@@ -63,27 +65,52 @@ export function ProfileForm() {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-sm mb-1">الاسم الأول</label>
-            <input name="firstName" value={form.firstName} onChange={handleChange} className="w-full p-2 border rounded-lg dark:bg-slate-900" />
+            <input
+              name="firstName"
+              value={form.firstName}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-lg dark:bg-slate-900"
+            />
           </div>
           <div>
             <label className="block text-sm mb-1">الاسم الأخير</label>
-            <input name="lastName" value={form.lastName} onChange={handleChange} className="w-full p-2 border rounded-lg dark:bg-slate-900" />
+            <input
+              name="lastName"
+              value={form.lastName}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-lg dark:bg-slate-900"
+            />
           </div>
         </div>
 
         <div>
           <label className="block text-sm mb-1">المسمى الوظيفي</label>
-          <input name="jobTitle" value={form.jobTitle} onChange={handleChange} className="w-full p-2 border rounded-lg dark:bg-slate-900" />
+          <input
+            name="jobTitle"
+            value={form.jobTitle}
+            onChange={handleChange}
+            className="w-full p-2 border rounded-lg dark:bg-slate-900"
+          />
         </div>
 
         <div>
           <label className="block text-sm mb-1">نبذة عنك</label>
-          <textarea name="bio" value={form.bio} onChange={handleChange} rows={3} className="w-full p-2 border rounded-lg dark:bg-slate-900" />
+          <textarea
+            name="bio"
+            value={form.bio}
+            onChange={handleChange}
+            rows={3}
+            className="w-full p-2 border rounded-lg dark:bg-slate-900"
+          />
         </div>
 
         {message && <p className="text-center font-medium">{message}</p>}
 
-        <button type="submit" disabled={loading} className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50">
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50"
+        >
           {loading ? 'جاري الحفظ...' : '💾 حفظ التغييرات'}
         </button>
       </form>
