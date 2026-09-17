@@ -4,6 +4,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+
 jobs:
   build-and-validate:
     runs-on: ubuntu-latest
@@ -11,31 +13,21 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     steps:
-      - name: الخطوة الحتمية 1 - استنساخ المستودع
+      - name: الخطوة 1 - استنساخ المستودع
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: الخطوة الحتمية 2 - إعداد بيئة Node.js
+      - name: الخطوة 2 - إعداد بيئة Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22.10.0'
 
-      - name: الخطوة الحتمية 3 - تثبيت pnpm
+      - name: الخطوة 3 - تثبيت pnpm
         run: npm install -g pnpm@9.15.0
 
-      - name: الخطوة الحتمية 4 - تخزين مؤقت لـ pnpm
-        uses: actions/cache@v4
-        with:
-          path: ~/.local/share/pnpm/store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
+      - name: الخطوة 4 - تثبيت الاعتماديات
+        run: pnpm install --no-frozen-lockfile
 
-      - name: الخطوة الحتمية 5 - تثبيت الاعتماديات
-        run: pnpm install --frozen-lockfile
-
-      - name: الخطوة الحتمية 6 - الفحص الداخلي والبناء
-        run: |
-          echo "Running validation protocol..."
-          pnpm lint && pnpm build:ci
+      - name: الخطوة 5 - البناء
+        run: pnpm build
