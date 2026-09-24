@@ -9,7 +9,6 @@
 # ============================================================
 node_modules/
 .pnpm-store/
-pnpm-lock.yaml   # optional: keep if you want to track lockfile (recommended to keep)
 
 # ============================================================
 # 🚀 Next.js
@@ -42,8 +41,8 @@ migrations/
 *.db
 *.sqlite
 *.sqlite-journal
-drizzle/          # إذا كنت تستخدم مجلد drizzle/
-drizzle.config.ts # اختياري: احتفظ به إذا كان ملفاً عاماً
+drizzle/
+drizzle.config.ts
 
 # ============================================================
 # 🧪 Testing (Playwright & Chromatic)
@@ -55,7 +54,7 @@ __snapshots__/
 .chromatic/
 *.test.ts
 *.spec.ts
-*.e2e.ts         # اختياري: احتفظ بها إذا أردت تتبعها
+*.e2e.ts
 test/coverage/
 coverage/
 .nyc_output/
@@ -108,10 +107,6 @@ lerna-debug.log*
 # ============================================================
 *.tsbuildinfo
 *.d.ts.map
-*.js.map
-*.js
-!*.d.ts          # استثناء ملفات التعريف (declaration files)
-*.d.ts           # لكن تجاهل جميع ملفات d.ts بشكل عام (اختياري)
 
 # ============================================================
 # 🧰 Misc
