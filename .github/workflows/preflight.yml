@@ -1,0 +1,43 @@
+name: Preflight Import Check
+on: [workflow_dispatch, push]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          cat > /tmp/check.mjs << 'EOF'
+          import { readFileSync, readdirSync, statSync, existsSync } from 'fs';
+          import { join, dirname, resolve } from 'path';
+          const exts = ['.ts','.tsx','.js','.jsx','.json'];
+          const files = [];
+          const walk = d => { for (const f of readdirSync(d)) {
+            const p = join(d,f);
+            if (statSync(p).isDirectory()) { if(!['node_modules','.next','.git'].includes(f)) walk(p); }
+            else if (/\.(tsx?|jsx?)$/.test(f)) files.push(p);
+          }};
+          walk('src');
+          const missing = new Set();
+          for (const f of files) {
+            const code = readFileSync(f,'utf8');
+            const re = /(?:import|export)[^'"]*from\s+['"]([^'"]+)['"]|import\(\s*['"]([^'"]+)['"]/g;
+            let m;
+            while ((m = re.exec(code))) {
+              const spec = m[1] || m[2];
+              if (!spec || (!spec.startsWith('@/') && !spec.startsWith('.'))) continue;
+              const base = spec.startsWith('@/')
+                ? join('src', spec.slice(2))
+                : resolve(dirname(f), spec);
+              let ok = existsSync(base);
+              if (!ok) for (const e of exts) if (existsSync(base+e)) { ok=true; break; }
+              if (!ok) for (const e of exts) if (existsSync(join(base,'index'+e))) { ok=true; break; }
+              if (!ok) missing.add(`${f}  ->  ${spec}`);
+            }
+          }
+          if (missing.size) {
+            console.log('❌ MISSING MODULES:\n' + [...missing].join('\n'));
+            process.exit(1);
+          }
+          console.log('✅ All imports resolve.');
+          EOF
+          node /tmp/check.mjs
